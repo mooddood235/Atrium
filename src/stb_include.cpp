@@ -1,3 +1,3 @@
 #define STB_INCLUDE_IMPLEMENTATION
 #define STB_INCLUDE_LINE_NONE
-#include <stb_include/stb_include.h>
+#include <stb/stb_include.h>

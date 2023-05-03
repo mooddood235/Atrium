@@ -145,14 +145,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\AtriumScene.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\Atrium.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\stb_image.cpp" />
+    <ClCompile Include="src\stb_image_write.cpp" />
     <ClCompile Include="src\stb_include.cpp" />
+    <ClCompile Include="src\tiny_gltf.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Includes\stb_include\stb_include.h">
+    <ClInclude Include="src\AtriumScene.h" />
+    <ClInclude Include="Includes\stb\stb_include.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>

@@ -3,7 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <stb_include/stb_include.h>
+#include <stb/stb_include.h>
 
 ShaderProgram::ShaderProgram(const string& computePath) {
 	shaderProgramID = LinkProgram(std::vector<unsigned int>{CompileShader(computePath, GL_COMPUTE_SHADER)});
