@@ -1,0 +1,9 @@
+#version 460 core
+
+#include "Test2.glsl"
+
+layout(local_size_x = 8, local_size_y = 4) in;
+
+void main(){
+
+}

@@ -27,6 +27,9 @@
     <ClCompile Include="src\stb_include.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Atrium.h">
@@ -35,5 +38,12 @@
     <ClInclude Include="Includes\stb_include\stb_include.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Shaders\Test.comp" />
+    <None Include="src\Shaders\Test2.glsl" />
   </ItemGroup>
 </Project>

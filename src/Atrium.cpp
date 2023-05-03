@@ -2,7 +2,7 @@
 #include <glad/glad.h>
 
 #include "Atrium.h"
-
+#include "ShaderProgram.h"
 
 int main()
 {
@@ -14,6 +14,9 @@ int main()
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     
+    // Objects
+    ShaderProgram shaderProgram = ShaderProgram("src/Shaders/test.comp");
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
