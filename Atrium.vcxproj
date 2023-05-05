@@ -145,7 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\AtriumScene.cpp" />
+    <ClCompile Include="src\Node.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\Atrium.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -153,15 +154,18 @@
     <ClCompile Include="src\stb_image_write.cpp" />
     <ClCompile Include="src\stb_include.cpp" />
     <ClCompile Include="src\tiny_gltf.cpp" />
+    <ClCompile Include="src\Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\AtriumScene.h" />
     <ClInclude Include="Includes\stb\stb_include.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="src\Node.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\ShaderProgram.h" />
     <ClInclude Include="src\Atrium.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\Test.comp" />

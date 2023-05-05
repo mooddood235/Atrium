@@ -1,8 +1,9 @@
 #include <iostream>
 #include <glad/glad.h>
+#include <string>
 
 #include "Atrium.h"
-#include "ShaderProgram.h"
+#include "Scene.h"
 
 int main()
 {
@@ -15,7 +16,7 @@ int main()
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     
     // Objects
-    ShaderProgram shaderProgram = ShaderProgram("src/Shaders/test.comp");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Cube.gltf");
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
