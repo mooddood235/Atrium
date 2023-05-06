@@ -7,7 +7,15 @@ using namespace Atrium;
 Scene::Scene(const std::string& scenePath) {
 	tinygltf::Model model;
 	LoadModel(model, scenePath);
-	rootNode = CreateHierarchy(model);
+	CreateHierarchy(model);
+}
+std::string Scene::ToString() {
+	std::string str;
+	for (unsigned int i = 0; i < hierarchy.size(); i++) {
+		if (i > 0) str += "\n";
+		str += hierarchy[i]->ToString();
+	}
+	return str;
 }
 void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 	tinygltf::TinyGLTF loader;
@@ -23,15 +31,15 @@ void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 	}
 	if (!warning.empty()) std::cout << warning << std::endl;
 }
-Node* Scene::CreateHierarchy(const tinygltf::Model& model) {
+void Scene::CreateHierarchy(const tinygltf::Model& model) {
 	tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
-	return CreateNode(model.nodes[defaultScene.nodes[0]], model, defaultScene);
+	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], model, defaultScene));	
 }
 Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model, const tinygltf::Scene gltfScene) {
 	Node* node = new Node(gltfNode.name);
 
 	for (int child : gltfNode.children) {
-		tinygltf::Node gltfChildNode = model.nodes[gltfScene.nodes[child]];
+		tinygltf::Node gltfChildNode = model.nodes[child];
 		node->children.push_back(CreateNode(gltfChildNode, model, gltfScene));
 	}
 	return node;
