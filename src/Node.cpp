@@ -5,10 +5,14 @@ using namespace Atrium;
 
 Node::Node(const std::string& name) {
 	this->name = name;
+	type = NodeType::Node;
 	children = std::vector<Node*>();
 }
 std::string Node::ToString(unsigned int depth) {
 	std::string str = "-" + name;
+
+	if (type == NodeType::Node) str += " (Node)";
+	else if (type == NodeType::Mesh) str += " (Mesh)";
 
 	std::string depthStr;
 	depth++;

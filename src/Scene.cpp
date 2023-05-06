@@ -2,6 +2,8 @@
 #include <iostream>
 #include <TinyGLTF/tiny_gltf.h>
 
+#include "Mesh.h"
+
 using namespace Atrium;
 
 Scene::Scene(const std::string& scenePath) {
@@ -33,14 +35,16 @@ void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 }
 void Scene::CreateHierarchy(const tinygltf::Model& model) {
 	tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
-	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], model, defaultScene));	
+	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], model));	
 }
-Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model, const tinygltf::Scene gltfScene) {
-	Node* node = new Node(gltfNode.name);
+Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model) {
+	Node* node;
+	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode.name);
+	else node = new Node(gltfNode.name);
 
 	for (int child : gltfNode.children) {
 		tinygltf::Node gltfChildNode = model.nodes[child];
-		node->children.push_back(CreateNode(gltfChildNode, model, gltfScene));
+		node->children.push_back(CreateNode(gltfChildNode, model));
 	}
 	return node;
 }
