@@ -8,7 +8,7 @@ Node::Node(const std::string& name) {
 	type = NodeType::Node;
 	children = std::vector<Node*>();
 }
-std::string Node::ToString(unsigned int depth) {
+std::string Node::ToString(unsigned int depth) const{
 	std::string str = "-" + name;
 
 	if (type == NodeType::Node) str += " (Node)";
@@ -18,6 +18,6 @@ std::string Node::ToString(unsigned int depth) {
 	depth++;
 	for (unsigned int i = 0; i < depth; i++) depthStr += " ";
 
-	for (Node* child : children) str += "\n" + depthStr + child->ToString(depth);
+	for (const Node* child : children) str += "\n" + depthStr + child->ToString(depth);
 	return str;
 }

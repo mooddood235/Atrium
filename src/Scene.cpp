@@ -11,7 +11,7 @@ Scene::Scene(const std::string& scenePath) {
 	LoadModel(model, scenePath);
 	CreateHierarchy(model);
 }
-std::string Scene::ToString() {
+std::string Scene::ToString() const{
 	std::string str;
 	for (unsigned int i = 0; i < hierarchy.size(); i++) {
 		if (i > 0) str += "\n";
@@ -34,16 +34,16 @@ void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 	if (!warning.empty()) std::cout << warning << std::endl;
 }
 void Scene::CreateHierarchy(const tinygltf::Model& model) {
-	tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
+	const tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
 	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], model));	
 }
-Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model) {
+Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model) const{
 	Node* node;
-	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode.name);
+	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode.name, model.meshes[gltfNode.mesh], model);
 	else node = new Node(gltfNode.name);
 
 	for (int child : gltfNode.children) {
-		tinygltf::Node gltfChildNode = model.nodes[child];
+		const tinygltf::Node gltfChildNode = model.nodes[child];
 		node->children.push_back(CreateNode(gltfChildNode, model));
 	}
 	return node;
