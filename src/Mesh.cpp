@@ -8,15 +8,19 @@ using namespace Atrium;
 Mesh::Mesh(const std::string& name) : Node(name){
 	type = NodeType::Mesh;
 	vertices = std::vector<Vertex>();
+	indices = std::vector<unsigned int>();
 }
 Mesh::Mesh(const std::string& name, const tinygltf::Mesh& mesh, const tinygltf::Model& model) : Node(name) {
 	type = NodeType::Mesh;
-	
-	std::vector<glm::vec3> positions;
-	
+
 	const tinygltf::Primitive primitive = mesh.primitives[0];
-	
-	for (const auto& x: primitive.attributes) {
+	LoadAttributes(primitive, model);
+	LoadIndices(primitive, model);	
+}
+void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
+	std::vector<glm::vec3> positions;
+
+	for (const auto& x : primitive.attributes) {
 		std::string attributeName = x.first;
 
 		const tinygltf::Accessor& accessor = model.accessors[x.second];
@@ -25,7 +29,7 @@ Mesh::Mesh(const std::string& name, const tinygltf::Mesh& mesh, const tinygltf::
 
 		size_t totalByteOffset = accessor.byteOffset + bufferView.byteOffset;
 		int stride = accessor.ByteStride(bufferView);
-			
+
 		const unsigned char* data = buffer.data.data() + totalByteOffset;
 
 		if (attributeName == "POSITION") {
@@ -34,14 +38,26 @@ Mesh::Mesh(const std::string& name, const tinygltf::Mesh& mesh, const tinygltf::
 				exit(-1);
 			}
 			positions.resize(accessor.count);
-
-			for (unsigned int i = 0; i < positions.size(); i++)
-				positions[i] = *(glm::vec3*)(data + stride * i);
+			for (unsigned int i = 0; i < positions.size(); i++) positions[i] = *(glm::vec3*)(data + stride * i);
 		}
 	}
 	vertices.resize(positions.size());
-	for (unsigned int i = 0; i < vertices.size(); i++) {
-		vertices[i] = Vertex(positions[i]);
-		//std::cout << positions[i].x << ", " << positions[i].y << ", " << positions[i].z << std::endl;
+	for (unsigned int i = 0; i < vertices.size(); i++) vertices[i] = Vertex(positions[i]);
+}
+void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
+	const tinygltf::Accessor& accessor = model.accessors[primitive.indices];
+	const tinygltf::BufferView& bufferView = model.bufferViews[accessor.bufferView];
+	const tinygltf::Buffer& buffer = model.buffers[bufferView.buffer];
+
+	size_t totalByteOffset = accessor.byteOffset + bufferView.byteOffset;
+	int stride = accessor.ByteStride(bufferView);
+
+	const unsigned char* data = buffer.data.data() + totalByteOffset;
+
+	if (!(accessor.type == TINYGLTF_TYPE_SCALAR && accessor.componentType == GL_UNSIGNED_SHORT)) {
+		std::cout << "Only indices that are scaler unsigned shorts are supported." << std::endl;
+		exit(-1);
 	}
+	indices.resize(accessor.count);
+	for (unsigned int i = 0; i < indices.size(); i++) indices[i] = *(unsigned short*)(data + stride * i);
 }

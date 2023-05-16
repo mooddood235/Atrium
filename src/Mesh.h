@@ -11,8 +11,12 @@ namespace Atrium {
 	public:
 		Mesh(const std::string& name);
 		Mesh(const std::string& name, const tinygltf::Mesh& mesh, const tinygltf::Model& model);
+	private:
+		void LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
+		void LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
 	public:
 		std::vector<Vertex> vertices;
+		std::vector<unsigned int> indices;
 	};
 }
 
