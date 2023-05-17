@@ -5,15 +5,15 @@
 
 using namespace Atrium;
 
-Mesh::Mesh(const std::string& name) : Node(name){
-	type = NodeType::Mesh;
-	vertices = std::vector<Vertex>();
-	indices = std::vector<unsigned int>();
-}
-Mesh::Mesh(const std::string& name, const tinygltf::Mesh& mesh, const tinygltf::Model& model) : Node(name) {
+
+Mesh::Mesh(const tinygltf::Node& gltfNode, const tinygltf::Model& model) : Node(gltfNode) {
+	if (gltfNode.mesh < 0) {
+		std::cout << "Tried to create Mesh node from non-mesh gltf node '" << gltfNode.name << "'!" << std::endl;
+		exit(-1);
+	}
 	type = NodeType::Mesh;
 
-	const tinygltf::Primitive primitive = mesh.primitives[0];
+	const tinygltf::Primitive primitive = model.meshes[gltfNode.mesh].primitives[0];
 	LoadAttributes(primitive, model);
 	LoadIndices(primitive, model);	
 }

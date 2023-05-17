@@ -39,8 +39,8 @@ void Scene::CreateHierarchy(const tinygltf::Model& model) {
 }
 Node* Scene::CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Model& model) const{
 	Node* node;
-	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode.name, model.meshes[gltfNode.mesh], model);
-	else node = new Node(gltfNode.name);
+	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode, model);
+	else node = new Node(gltfNode);
 
 	for (int child : gltfNode.children) {
 		const tinygltf::Node gltfChildNode = model.nodes[child];

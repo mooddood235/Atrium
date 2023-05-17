@@ -2,6 +2,8 @@
 
 #include <string>
 #include <vector>
+#include <TinyGLTF/tiny_gltf.h>
+
 
 namespace Atrium {
 	enum class NodeType {
@@ -11,7 +13,7 @@ namespace Atrium {
 
 	class Node {
 	public:
-		Node(const std::string& name);
+		Node(const tinygltf::Node& gltfNode);
 		std::string ToString(unsigned int depth = 0) const;
 	public:
 		std::string name;

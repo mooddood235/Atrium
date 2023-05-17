@@ -3,8 +3,8 @@
 
 using namespace Atrium;
 
-Node::Node(const std::string& name) {
-	this->name = name;
+Node::Node(const tinygltf::Node& gltfNode) {
+	name = gltfNode.name;
 	type = NodeType::Node;
 	children = std::vector<Node*>();
 }
