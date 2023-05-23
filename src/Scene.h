@@ -13,7 +13,7 @@ namespace Atrium {
 	private:
 		void LoadModel(tinygltf::Model& model, const std::string& scenePath);
 		void CreateHierarchy(const tinygltf::Model& model);
-		Node* CreateNode(const tinygltf::Node& gltfNode, const tinygltf::Node* gltfParentNode, const tinygltf::Model& model) const;
+		Node* CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) const;
 	private:
 		std::vector<Node*> hierarchy;
 	};

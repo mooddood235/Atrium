@@ -17,7 +17,7 @@ namespace Atrium {
 	};
 	class Node {
 	public:
-		Node(const tinygltf::Node& gltfNode, const tinygltf::Node* gltfParentNode);
+		Node(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform);
 		std::string ToString(unsigned int depth = 0) const;
 	
 		glm::mat4 GetTransform(Space space) const;
@@ -25,19 +25,16 @@ namespace Atrium {
 		void Scale(glm::vec3 factor, Space space = Space::Global);
 		void Rotate(float angleInDegrees, glm::vec3 axis, Space space = Space::Global);
 	private:
-		void LoadTransformations(const tinygltf::Node* gltfNode,
-			glm::fquat& quaternion, glm::vec3& scale, glm::vec3& translation);
-
-		glm::mat4 GetParentWorldTransform() const;
-		glm::mat3 GetRotationMatrix(Space space) const;
+		void LoadLocalTransforms(const tinygltf::Node& gltfNode);
 	public:
 		std::string name;
 		NodeType type;
 		std::vector<Node*> children;
 	private:
-		glm::fquat lQuaternion, gQuaternion;
-		glm::vec3 lScale, gScale;
-		glm::vec3 lTranslation, gTranslation;
+		glm::mat4 localRotation;
+		glm::mat4 localScale;
+		glm::mat4 localTranslation;
+		glm::mat4 parentWorldTransform;
 	};
 }
 
