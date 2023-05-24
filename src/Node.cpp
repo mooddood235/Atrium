@@ -63,6 +63,8 @@ std::string Node::ToString(unsigned int depth) const{
 
 	if (type == NodeType::Node) str += " (Node)";
 	else if (type == NodeType::Mesh) str += " (Mesh)";
+	else if (type == NodeType::Camera) str += " (Camera)";
+	else str += " (Unknown Type. This should not happen. someting is wrong.)";
 
 	std::string depthStr;
 	depth++;

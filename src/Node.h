@@ -9,7 +9,8 @@
 namespace Atrium {
 	enum class NodeType {
 		Node,
-		Mesh
+		Mesh,
+		Camera
 	};
 	enum class Space {
 		Global,

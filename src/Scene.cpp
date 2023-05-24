@@ -3,6 +3,7 @@
 #include <TinyGLTF/tiny_gltf.h>
 
 #include "Mesh.h"
+#include "Camera.h"
 
 using namespace Atrium;
 
@@ -40,6 +41,7 @@ void Scene::CreateHierarchy(const tinygltf::Model& model) {
 Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) const{
 	Node* node;
 	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode, parentWorldTransform, model);
+	else if (gltfNode.camera >= 0) node = new Camera(gltfNode, parentWorldTransform, model);
 	else node = new Node(gltfNode, parentWorldTransform);
 
 	for (int child : gltfNode.children) {
