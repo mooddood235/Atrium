@@ -35,14 +35,14 @@ void Node::Translate(glm::vec3 translation, Space space) {
 		translation = glm::inverse(parentWorldTransform) * glm::vec4(translation, 1.0f);
 	localTranslation = glm::translate(localTranslation, translation);
 
-	for (Node* child : children) child->parentWorldTransform = GetTransform(Space::Global);
+	UpdateChildrenTransforms();
 }
 void Node::Scale(glm::vec3 factor, Space space) {
 	if (space == Space::Global)
 		factor = glm::inverse(parentWorldTransform) * glm::vec4(factor, 1.0f);
 	localScale = glm::scale(localScale, factor);
 
-	for (Node* child : children) child->parentWorldTransform = GetTransform(Space::Global);
+	UpdateChildrenTransforms();
 }
 void Node::Rotate(float angleInDegrees, glm::vec3 axis, Space space) {
 	if (space == Space::Global)
@@ -50,7 +50,13 @@ void Node::Rotate(float angleInDegrees, glm::vec3 axis, Space space) {
 	axis = glm::inverse(localRotation) * glm::vec4(axis, 1.0f);
 	localRotation = glm::rotate(localRotation, glm::radians(angleInDegrees), axis);
 
-	for (Node* child : children) child->parentWorldTransform = GetTransform(Space::Global);
+	UpdateChildrenTransforms();
+}
+void Node::UpdateChildrenTransforms() {
+	for (Node* child : children) {
+		child->parentWorldTransform = GetTransform(Space::Global);
+		child->UpdateChildrenTransforms();
+	}
 }
 std::string Node::ToString(unsigned int depth) const{
 	std::string str = "-" + name;

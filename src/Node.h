@@ -24,6 +24,7 @@ namespace Atrium {
 		void Translate(glm::vec3 translation, Space space = Space::Global);
 		void Scale(glm::vec3 factor, Space space = Space::Global);
 		void Rotate(float angleInDegrees, glm::vec3 axis, Space space = Space::Global);
+		void UpdateChildrenTransforms();
 	private:
 		void LoadLocalTransforms(const tinygltf::Node& gltfNode);
 	public:
