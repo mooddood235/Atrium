@@ -16,7 +16,7 @@ int main()
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/TeaSet/TeaSet.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Test.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     // Render loop
