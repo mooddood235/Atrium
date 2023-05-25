@@ -46,7 +46,7 @@ Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTra
 
 	for (int child : gltfNode.children) {
 		const tinygltf::Node gltfChildNode = model.nodes[child];
-		node->children.push_back(CreateNode(gltfChildNode, node->GetTransform(Space::Global), model));
+		node->AddChild(CreateNode(gltfChildNode, node->GetTransform(Space::Global), model));
 	}
 	return node;
 }

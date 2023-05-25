@@ -30,6 +30,16 @@ glm::mat4 Node::GetTransform(Space space) const{
 	return space == Space::Global ? parentWorldTransform * localTransform : localTransform;
 }
 
+std::string Node::GetName() const {
+	return name;
+}
+NodeType Node::GetType() const {
+	return type;
+}
+void Node::AddChild(Node* node) {
+	children.push_back(node);
+}
+
 void Node::Translate(glm::vec3 translation, Space space) {
 	if (space == Space::Global) 
 		translation = glm::inverse(parentWorldTransform) * glm::vec4(translation, 1.0f);
