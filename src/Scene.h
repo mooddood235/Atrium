@@ -10,6 +10,8 @@ namespace Atrium {
 	public:
 		Scene(const std::string& scenePath);
 		std::string ToString() const;
+
+		std::vector<Node> GetHierarchy() const;
 	private:
 		void LoadModel(tinygltf::Model& model, const std::string& scenePath);
 		void CreateHierarchy(const tinygltf::Model& model);

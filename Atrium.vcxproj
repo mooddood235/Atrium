@@ -145,6 +145,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Buffer.cpp" />
+    <ClCompile Include="src\AccelerationStructure.cpp" />
+    <ClCompile Include="src\RenderCamera.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Node.cpp" />
@@ -157,8 +160,12 @@
     <ClCompile Include="src\stb_include.cpp" />
     <ClCompile Include="src\tiny_gltf.cpp" />
     <ClCompile Include="src\Vertex.cpp" />
+    <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Buffer.h" />
+    <ClInclude Include="src\AccelerationStructure.h" />
+    <ClInclude Include="src\RenderCamera.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="Includes\stb\stb_include.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
@@ -170,6 +177,7 @@
     <ClInclude Include="src\ShaderProgram.h" />
     <ClInclude Include="src\Atrium.h" />
     <ClInclude Include="src\Vertex.h" />
+    <ClInclude Include="src\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\Test.comp" />

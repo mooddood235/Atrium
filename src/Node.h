@@ -25,7 +25,9 @@ namespace Atrium {
 
 		std::string GetName() const;
 		NodeType GetType() const;
+
 		void AddChild(Node* node);
+		std::vector<Node> GetChildren() const;
 
 		void Translate(glm::vec3 translation, Space space = Space::Global);
 		void Scale(glm::vec3 factor, Space space = Space::Global);

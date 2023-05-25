@@ -50,3 +50,8 @@ Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTra
 	}
 	return node;
 }
+std::vector<Node> Scene::GetHierarchy() const{
+	std::vector<Node> nodes = std::vector<Node>(hierarchy.size());
+	for (Node* node : hierarchy) nodes.push_back(*node);
+	return nodes;
+}

@@ -4,6 +4,7 @@
 
 #include "Atrium.h"
 #include "Scene.h"
+#include "Buffer.h"
 
 int main()
 {
@@ -18,6 +19,7 @@ int main()
     // Objects
     Atrium::Scene cubeScene = Atrium::Scene("Models/Test.gltf");
     std::cout << cubeScene.ToString() << std::endl;
+    Atrium::Buffer(const_cast<Atrium::Scene&>(cubeScene));
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
