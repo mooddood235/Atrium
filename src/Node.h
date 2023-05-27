@@ -27,7 +27,6 @@ namespace Atrium {
 		NodeType GetType() const;
 
 		void AddChild(Node* node);
-		std::vector<Node> GetChildren() const;
 
 		void Translate(glm::vec3 translation, Space space = Space::Global);
 		void Scale(glm::vec3 factor, Space space = Space::Global);
@@ -35,10 +34,11 @@ namespace Atrium {
 		void UpdateChildrenTransforms();
 	private:
 		void LoadLocalTransforms(const tinygltf::Node& gltfNode);
+	public:
+		std::vector<Node*> children;
 	protected:
 		std::string name;
 		NodeType type;
-		std::vector<Node*> children;
 
 		glm::mat4 localRotation;
 		glm::mat4 localScale;

@@ -1,7 +1,7 @@
 #pragma once
 
 namespace Atrium {
-	class AccelerationStructure{
+	struct AccelerationStructure{
 
 	};
 }

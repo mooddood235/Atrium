@@ -40,12 +40,6 @@ void Node::AddChild(Node* node) {
 	children.push_back(node);
 }
 
-std::vector<Node> Node::GetChildren() const{
-	std::vector<Node> nodes = std::vector<Node>(children.size());
-	for (Node* node : children) nodes.push_back(*node);
-	return nodes;
-}
-
 void Node::Translate(glm::vec3 translation, Space space) {
 	if (space == Space::Global) 
 		translation = glm::inverse(parentWorldTransform) * glm::vec4(translation, 1.0f);

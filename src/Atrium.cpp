@@ -19,7 +19,7 @@ int main()
     // Objects
     Atrium::Scene cubeScene = Atrium::Scene("Models/Test.gltf");
     std::cout << cubeScene.ToString() << std::endl;
-    Atrium::Buffer(const_cast<Atrium::Scene&>(cubeScene));
+    Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {

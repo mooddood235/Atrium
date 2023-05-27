@@ -7,7 +7,7 @@ namespace Atrium {
 	class Camera : public Node{
 	public:
 		Camera(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model);
-		glm::mat4 GetProjectionMatrix();
+		glm::mat4 GetProjectionMatrix() const;
 	private:
 		void LoadProjectionMatrix(const tinygltf::Node& gltfNode, const tinygltf::Model& model);
 	private:

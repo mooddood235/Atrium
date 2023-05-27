@@ -28,6 +28,6 @@ void Atrium::Camera::LoadProjectionMatrix(const tinygltf::Node& gltfNode, const 
 			camera.orthographic.znear, camera.orthographic.zfar);
 	}
 }
-glm::mat4 Camera::GetProjectionMatrix() {
+glm::mat4 Camera::GetProjectionMatrix() const{
 	return projectionMatrix;
 }
