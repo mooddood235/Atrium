@@ -2,9 +2,13 @@
 #include <glad/glad.h>
 #include <string>
 
+#include "../src_display/Quad.h"
+
 #include "Atrium.h"
 #include "Scene.h"
 #include "Buffer.h"
+#include "RenderCamera.h"
+#include "ShaderProgram.h"
 
 int main()
 {
@@ -20,9 +24,23 @@ int main()
     Atrium::Scene cubeScene = Atrium::Scene("Models/Test.gltf");
     std::cout << cubeScene.ToString() << std::endl;
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
+    Atrium::RenderCamera renderCamera(*cubeScene.cameras[0], WINDOWWIDTH, WINDOWHEIGHT);
+
+    // Display Objects
+    Quad quad = Quad();
+    Atrium::ShaderProgram displayShader("src_display/Shaders/display.vert", "src_display/Shaders/display.frag");
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        renderCamera.Render();
+
+        glBindTexture(GL_TEXTURE_2D, renderCamera.GetFilm());
+        displayShader.Use();
+        quad.Draw();
+        displayShader.UnUse();
+
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

@@ -145,6 +145,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src_display\Quad.cpp" />
+    <ClCompile Include="src\Film.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
     <ClCompile Include="src\AccelerationStructure.cpp" />
     <ClCompile Include="src\RenderCamera.cpp" />
@@ -163,6 +165,8 @@
     <ClCompile Include="src\Triangle.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src_display\Quad.h" />
+    <ClInclude Include="src\Film.h" />
     <ClInclude Include="src\Buffer.h" />
     <ClInclude Include="src\AccelerationStructure.h" />
     <ClInclude Include="src\RenderCamera.h" />
@@ -180,8 +184,11 @@
     <ClInclude Include="src\Triangle.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shaders\Integrator.comp" />
     <None Include="src\Shaders\Test.comp" />
     <None Include="src\Shaders\Test2.glsl" />
+    <None Include="src_display\Shaders\display.frag" />
+    <None Include="src_display\Shaders\display.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

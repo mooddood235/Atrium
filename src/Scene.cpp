@@ -38,10 +38,13 @@ void Scene::CreateHierarchy(const tinygltf::Model& model) {
 	const tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
 	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], glm::mat4(1.0f), model));
 }
-Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) const{
+Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) {
 	Node* node;
 	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode, parentWorldTransform, model);
-	else if (gltfNode.camera >= 0) node = new Camera(gltfNode, parentWorldTransform, model);
+	else if (gltfNode.camera >= 0) {
+		node = new Camera(gltfNode, parentWorldTransform, model);
+		cameras.push_back((Camera*)node);
+	}
 	else node = new Node(gltfNode, parentWorldTransform);
 
 	for (int child : gltfNode.children) {
