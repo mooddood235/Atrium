@@ -6,5 +6,6 @@ in vec2 fragCoord;
 out vec4 fragColor;
 
 void main(){
-	fragColor = textureLod(film, fragCoord, 0.0);
+	vec2 uv = (fragCoord + 1.0) / 2.0;
+	fragColor = textureLod(film, uv, 0.0);
 }
