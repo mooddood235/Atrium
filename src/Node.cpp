@@ -29,7 +29,6 @@ glm::mat4 Node::GetTransform(Space space) const{
 	glm::mat4 localTransform = localRotation * localScale * localTranslation;
 	return space == Space::Global ? parentWorldTransform * localTransform : localTransform;
 }
-
 std::string Node::GetName() const {
 	return name;
 }
@@ -57,7 +56,7 @@ void Node::Scale(glm::vec3 factor, Space space) {
 void Node::Rotate(float angleInDegrees, glm::vec3 axis, Space space) {
 	if (space == Space::Global)
 		axis = glm::normalize(glm::inverse(parentWorldTransform) * glm::vec4(axis, 0.0f));
-	axis = glm::inverse(localRotation) * glm::vec4(axis, 1.0f);
+	axis = glm::inverse(localRotation) * glm::vec4(axis, 0.0f);
 	localRotation = glm::rotate(localRotation, glm::radians(angleInDegrees), axis);
 
 	UpdateChildrenTransforms();

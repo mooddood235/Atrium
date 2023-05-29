@@ -163,6 +163,7 @@
     <ClCompile Include="src\tiny_gltf.cpp" />
     <ClCompile Include="src\Vertex.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_display\Quad.h" />
@@ -182,6 +183,7 @@
     <ClInclude Include="src\Atrium.h" />
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\Triangle.h" />
+    <ClInclude Include="src\Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\Integrator.comp" />

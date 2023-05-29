@@ -14,7 +14,7 @@ namespace Atrium{
 		ShaderProgram(const string& computePath);
 		ShaderProgram(const string& vertPath, const string& fragPath);
 
-		void Use();
+		void Use() const;
 		static void UnUse();
 	public:
 		void SetMat4(const std::string& uniformName, glm::mat4 value) const;

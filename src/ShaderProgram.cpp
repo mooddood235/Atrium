@@ -21,10 +21,10 @@ ShaderProgram::ShaderProgram(const string& vertPath, const string& fragPath) {
 	};
 	shaderProgramID = LinkProgram(shaders);
 }
-void ShaderProgram::Use() {
+void ShaderProgram::Use() const{
 	glUseProgram(shaderProgramID);
 }
-void ShaderProgram::UnUse() {
+void ShaderProgram::UnUse(){
 	glUseProgram(0);
 }
 unsigned int ShaderProgram::CompileShader(string shaderPath, GLenum type) {
@@ -62,6 +62,8 @@ unsigned int ShaderProgram::LinkProgram(const vector<unsigned int>& shaders) {
 	
 	glLinkProgram(shaderProgramID);
 	ProgramLinkingErrorCheck(shaderProgramID);
+
+	for (unsigned int shader : shaders) glDeleteShader(shader);
 
 	return shaderProgramID;
 }

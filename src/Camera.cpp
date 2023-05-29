@@ -31,3 +31,27 @@ void Atrium::Camera::LoadProjectionMatrix(const tinygltf::Node& gltfNode, const 
 glm::mat4 Camera::GetProjectionMatrix() const{
 	return projectionMatrix;
 }
+void Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(0, 0, -1, 1.0) * moveSpeed * deltaTime));
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(0, 0, 1, 1.0) * moveSpeed * deltaTime));
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(-1, 0, 0, 1.0) * moveSpeed * deltaTime));
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(1, 0, 0, 1.0) * moveSpeed * deltaTime));
+
+	double mouseX, mouseY;
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+
+	if (!firstMouse) {
+		lastX = mouseX;
+		lastY = mouseY;
+		firstMouse = true;
+	}
+
+	double xOffset = mouseX - lastX;
+	double yOffset = mouseY - lastY;
+
+	Rotate(-xOffset * mouseSensitivity, glm::vec3(0.0f, 1.0f, 0.0));
+	Rotate(-yOffset * mouseSensitivity, glm::normalize(GetTransform(Space::Global) * glm::vec4(1, 0, 0, 0)));
+
+	lastX = mouseX;
+	lastY = mouseY;
+}

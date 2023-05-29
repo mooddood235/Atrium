@@ -9,6 +9,7 @@
 #include "Buffer.h"
 #include "RenderCamera.h"
 #include "ShaderProgram.h"
+#include "Texture.h"
 
 int main()
 {
@@ -21,21 +22,35 @@ int main()
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Test.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/SingleCamera.gltf");
     std::cout << cubeScene.ToString() << std::endl;
-    Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
-    Atrium::RenderCamera renderCamera(*cubeScene.cameras[0], WINDOWWIDTH, WINDOWHEIGHT);
 
+    Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
+
+    Atrium::Camera* camera = cubeScene.cameras[0];
+    Atrium::RenderCamera renderCamera(*camera, WINDOWWIDTH, WINDOWHEIGHT);
+    renderCamera.SetEnvironmentMap(Atrium::Texture("EnvironmentMaps/alps_field_4k.hdr"));
+    
     // Display Objects
     Quad quad = Quad();
     Atrium::ShaderProgram displayShader("src_display/Shaders/display.vert", "src_display/Shaders/display.frag");
+
+    // Time Objects
+    float lastTime = 0.0f;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
-        renderCamera.Render();
+        float currentTime = glfwGetTime();
+        float deltaTime = currentTime - lastTime;
+        lastTime = currentTime;
 
+        renderCamera.Render();
+        camera->TransformFromInput(window, deltaTime);
+        renderCamera.SetCamera(*camera);
+
+        glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, renderCamera.GetFilm());
         displayShader.Use();
         quad.Draw();
@@ -63,8 +78,8 @@ GLFWwindow* InitGLFW() {
         exit(-1);
     }
     glfwMakeContextCurrent(window);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     return window;
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 void InitGLAD() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
