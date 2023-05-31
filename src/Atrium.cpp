@@ -10,6 +10,7 @@
 #include "RenderCamera.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "Film.h"
 
 int main()
 {
@@ -28,8 +29,9 @@ int main()
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
 
     Atrium::Camera* camera = cubeScene.cameras[0];
-    Atrium::RenderCamera renderCamera(*camera, WINDOWWIDTH, WINDOWHEIGHT);
+    Atrium::RenderCamera renderCamera(*camera);
     renderCamera.SetEnvironmentMap(Atrium::Texture("EnvironmentMaps/alps_field_4k.hdr"));
+    Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
     
     // Display Objects
     Quad quad = Quad();
@@ -46,12 +48,12 @@ int main()
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
 
-        renderCamera.Render();
+        renderCamera.Render(film);
         camera->TransformFromInput(window, deltaTime);
         renderCamera.SetCamera(*camera);
 
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, renderCamera.GetFilm());
+        glBindTexture(GL_TEXTURE_2D, film.GetTextureID());
         displayShader.Use();
         quad.Draw();
         displayShader.UnUse();
