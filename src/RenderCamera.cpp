@@ -2,28 +2,22 @@
 
 using namespace Atrium;
 
-RenderCamera::RenderCamera(const Camera& camera) {
-	SetCamera(camera);
+void RenderCamera::Init() {
 	integrator = ShaderProgram("src/Shaders/Integrator.comp");
-	environmentMap = Texture("EnvironmentMaps/White.png");
 }
-void RenderCamera::SetCamera(const Camera& camera) {
-	modelMatrix = camera.GetTransform(Space::Global);
-	projectionMatrix = camera.GetProjectionMatrix();
-}
-void RenderCamera::SetEnvironmentMap(const Texture& environmentMap) {
-	this->environmentMap = environmentMap;
-}
-void RenderCamera::Render(const Film& film) const{
-	integrator.SetMat4("camera.modelMatrix", modelMatrix);
-	integrator.SetMat4("camera.projectionMatrix", projectionMatrix);
+void RenderCamera::Render(const Camera& camera, const Film& film, const Texture& environmentMap) {
+	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global));
+	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
 
 	glBindImageTexture(0, film.GetTextureID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
+
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, environmentMap.GetTextureID());
-
+	
 	integrator.Use();
 	glDispatchCompute(film.GetResolution().x / 8, film.GetResolution().y / 4, 1);
 	glMemoryBarrier(GL_ALL_BARRIER_BITS);
 	integrator.UnUse();
 }
+
+ShaderProgram RenderCamera::integrator = ShaderProgram();

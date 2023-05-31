@@ -8,19 +8,12 @@
 #include "Texture.h"
 
 namespace Atrium {
-	class RenderCamera{
+	class RenderCamera {
 	public:
-		RenderCamera(const Camera& camera);
-		void SetCamera(const Camera& camera);
-		void SetEnvironmentMap(const Texture& environmentMap);
-		void Render(const Film& film) const;
+		static void Init();
+		static void Render(const Camera& camera, const Film& film, const Texture& environmentMap);
 	private:
-		glm::mat4 modelMatrix;
-		glm::mat4 projectionMatrix;
-		
-		ShaderProgram integrator;
-
-		Texture environmentMap;
+		static ShaderProgram integrator;
 	};
 }
 

@@ -21,6 +21,8 @@ int main()
     glDebugMessageCallback(GlDebugOutput, nullptr);
     glEnable(GL_DEBUG_OUTPUT);
     glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+
+    Atrium::RenderCamera::Init();
     
     // Objects
     Atrium::Scene cubeScene = Atrium::Scene("Models/SingleCamera.gltf");
@@ -29,9 +31,8 @@ int main()
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
 
     Atrium::Camera* camera = cubeScene.cameras[0];
-    Atrium::RenderCamera renderCamera(*camera);
-    renderCamera.SetEnvironmentMap(Atrium::Texture("EnvironmentMaps/alps_field_4k.hdr"));
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
+    Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
@@ -47,10 +48,9 @@ int main()
         float currentTime = glfwGetTime();
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
-
-        renderCamera.Render(film);
+        
         camera->TransformFromInput(window, deltaTime);
-        renderCamera.SetCamera(*camera);
+        Atrium::RenderCamera::Render(*camera, film, environmentMap);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());
