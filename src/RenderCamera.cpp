@@ -5,9 +5,11 @@ using namespace Atrium;
 void RenderCamera::Init() {
 	integrator = ShaderProgram("src/Shaders/Integrator.comp");
 }
-void RenderCamera::Render(const Camera& camera, const Film& film, const Texture& environmentMap) {
-	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global));
+void RenderCamera::Render(const Film& film, const Camera& camera, const AStructure& aStructure, const Texture& environmentMap) {
+	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global).GetMatrix());
 	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
+
+	aStructure.Bind();
 
 	glBindImageTexture(0, film.GetTextureID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 

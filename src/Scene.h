@@ -5,6 +5,7 @@
 
 #include "Node.h"
 #include "Camera.h"
+#include "Transform.h"
 
 namespace Atrium {
 	class Scene{
@@ -14,7 +15,7 @@ namespace Atrium {
 	private:
 		void LoadModel(tinygltf::Model& model, const std::string& scenePath);
 		void CreateHierarchy(const tinygltf::Model& model);
-		Node* CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model);
+		Node* CreateNode(const tinygltf::Node& gltfNode, Transform parentTransform, const tinygltf::Model& model);
 	public:
 		std::vector<Node*> hierarchy;
 		std::vector<Camera*> cameras;

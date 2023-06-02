@@ -25,7 +25,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/SingleCamera.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/DefaultScene.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
@@ -50,7 +50,10 @@ int main()
         lastTime = currentTime;
         
         camera->TransformFromInput(window, deltaTime);
-        Atrium::RenderCamera::Render(*camera, film, environmentMap);
+        //glm::vec3 p = camera->GetTransform(Atrium::Space::Global).GetMatrix() * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+        //std::cout << p.x << " " << p.y << " " << p.z << std::endl;
+
+        Atrium::RenderCamera::Render(film, *camera, buffer, environmentMap);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());

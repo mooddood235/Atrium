@@ -36,16 +36,16 @@ void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 }
 void Scene::CreateHierarchy(const tinygltf::Model& model) {
 	const tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];
-	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], glm::mat4(1.0f), model));
+	for (int node : defaultScene.nodes) hierarchy.push_back(CreateNode(model.nodes[node], Transform(), model));
 }
-Node* Scene::CreateNode(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) {
+Node* Scene::CreateNode(const tinygltf::Node& gltfNode, Transform parentTransform, const tinygltf::Model& model) {
 	Node* node;
-	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode, parentWorldTransform, model);
+	if (gltfNode.mesh >= 0) node = new Mesh(gltfNode, parentTransform, model);
 	else if (gltfNode.camera >= 0) {
-		node = new Camera(gltfNode, parentWorldTransform, model);
+		node = new Camera(gltfNode, parentTransform, model);
 		cameras.push_back((Camera*)node);
 	}
-	else node = new Node(gltfNode, parentWorldTransform);
+	else node = new Node(gltfNode, parentTransform);
 
 	for (int child : gltfNode.children) {
 		const tinygltf::Node gltfChildNode = model.nodes[child];

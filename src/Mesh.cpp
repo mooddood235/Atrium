@@ -6,7 +6,7 @@
 using namespace Atrium;
 
 
-Mesh::Mesh(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) : Node(gltfNode, parentWorldTransform) {
+Mesh::Mesh(const tinygltf::Node& gltfNode, Transform parentTransform, const tinygltf::Model& model) : Node(gltfNode, parentTransform) {
 	if (gltfNode.mesh < 0) {
 		std::cout << "Tried to create Mesh node from non-mesh gltf node '" << gltfNode.name << "'!" << std::endl;
 		exit(-1);

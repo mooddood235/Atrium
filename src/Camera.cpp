@@ -4,7 +4,7 @@
 
 using namespace Atrium;
 
-Camera::Camera(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform, const tinygltf::Model& model) : Node(gltfNode, parentWorldTransform){
+Camera::Camera(const tinygltf::Node& gltfNode, Transform parentTransform, const tinygltf::Model& model) : Node(gltfNode, parentTransform){
 	if (gltfNode.camera < 0) {
 		std::cout << "Tried to create Camera node from non-camera gltf node '" << gltfNode.name << "'!" << std::endl;
 		exit(-1);
@@ -32,10 +32,10 @@ glm::mat4 Camera::GetProjectionMatrix() const{
 	return projectionMatrix;
 }
 void Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(0, 0, -1, 1.0) * moveSpeed * deltaTime));
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(0, 0, 1, 1.0) * moveSpeed * deltaTime));
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(-1, 0, 0, 1.0) * moveSpeed * deltaTime));
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) Translate(glm::normalize(GetTransform(Space::Global) * glm::vec4(1, 0, 0, 1.0) * moveSpeed * deltaTime));
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(0, 0, -1) * moveSpeed * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(0, 0, 1) * moveSpeed * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(-1, 0, 0) * moveSpeed * deltaTime);
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(1, 0, 0) * moveSpeed * deltaTime);
 
 	double mouseX, mouseY;
 	glfwGetCursorPos(window, &mouseX, &mouseY);
@@ -50,8 +50,9 @@ void Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
 	double yOffset = mouseY - lastY;
 
 	Rotate(-xOffset * mouseSensitivity, glm::vec3(0.0f, 1.0f, 0.0));
-	Rotate(-yOffset * mouseSensitivity, glm::normalize(GetTransform(Space::Global) * glm::vec4(1, 0, 0, 0)));
+	Rotate(-yOffset * mouseSensitivity, GetTransform(Space::Global).rotationMatrix * glm::vec3(1.0f, 0.0f, 0.0f));
 
 	lastX = mouseX;
 	lastY = mouseY;
+
 }

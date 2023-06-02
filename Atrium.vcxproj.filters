@@ -54,7 +54,7 @@
     <ClCompile Include="src\RenderCamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\AccelerationStructure.cpp">
+    <ClCompile Include="src\AStructure.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Buffer.cpp">
@@ -70,6 +70,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Transform.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -101,7 +104,7 @@
     <ClInclude Include="src\RenderCamera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\AccelerationStructure.h">
+    <ClInclude Include="src\AStructure.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Buffer.h">
@@ -119,10 +122,11 @@
     <ClInclude Include="src\Texture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\Transform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="src\Shaders\Test.comp" />
-    <None Include="src\Shaders\Test2.glsl" />
     <None Include="src\Shaders\Integrator.comp" />
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />

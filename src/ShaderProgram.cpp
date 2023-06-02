@@ -102,3 +102,7 @@ void ShaderProgram::SetInt(const std::string& uniformName, int value) const{
 	unsigned int location = glGetUniformLocation(shaderProgramID, uniformName.c_str());
 	glProgramUniform1i(shaderProgramID, location, value);
 }
+void ShaderProgram::BindStorageBlock(std::string blockName, unsigned int bindPoint) const{
+	unsigned int blockIndex = glGetProgramResourceIndex(shaderProgramID, GL_SHADER_STORAGE_BLOCK, blockName.c_str());
+	glShaderStorageBlockBinding(shaderProgramID, blockIndex, bindPoint);
+}

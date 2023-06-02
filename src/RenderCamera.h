@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include "Camera.h"
 #include "Film.h"
-#include "AccelerationStructure.h"
+#include "AStructure.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
 
@@ -11,7 +11,7 @@ namespace Atrium {
 	class RenderCamera {
 	public:
 		static void Init();
-		static void Render(const Camera& camera, const Film& film, const Texture& environmentMap);
+		static void Render(const Film& film, const Camera& camera, const AStructure& aStructure, const Texture& environmentMap);
 	private:
 		static ShaderProgram integrator;
 	};

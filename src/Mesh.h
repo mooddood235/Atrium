@@ -9,7 +9,7 @@
 namespace Atrium {
 	class Mesh : public Node{
 	public:
-		Mesh(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform,
+		Mesh(const tinygltf::Node& gltfNode, Transform parentTransform,
 			const tinygltf::Model& model);
 	private:
 		void LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model);

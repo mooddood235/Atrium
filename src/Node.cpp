@@ -1,33 +1,34 @@
 #include "Node.h"
 #include <iostream>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtx/quaternion.hpp>
 
 using namespace Atrium;
 
-Node::Node(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform) {
+Node::Node(const tinygltf::Node& gltfNode, Transform parentTransform) {
 	name = gltfNode.name;
 	type = NodeType::Node;
 	children = std::vector<Node*>();
 
-	this->parentWorldTransform = parentWorldTransform;
-	LoadLocalTransforms(gltfNode);
+	this->parentTransform = parentTransform;
+	LoadLocalTransform(gltfNode);
 }
-void Node::LoadLocalTransforms(const tinygltf::Node& gltfNode) {
-	localRotation = gltfNode.rotation.size() == 0 ? glm::mat4(1.0f)
-	: glm::toMat4(
-		glm::fquat(gltfNode.rotation[3], gltfNode.rotation[0], gltfNode.rotation[1], gltfNode.rotation[2]));
-	
-	localScale = gltfNode.scale.size() == 0 ? glm::mat4(1.0f)
-		: glm::scale(glm::mat4(1.0f), glm::vec3(gltfNode.scale[0], gltfNode.scale[1], gltfNode.scale[2]));
+void Node::LoadLocalTransform(const tinygltf::Node& gltfNode) {
+	localTransform = Transform();
 
-	localTranslation = gltfNode.translation.size() == 0 ? glm::mat4(1.0f)
-		: glm::translate(glm::mat4(1.0f),
-			glm::vec3(gltfNode.translation[0], gltfNode.translation[1], gltfNode.translation[2]));
+	if (gltfNode.rotation.size() != 0)
+		localTransform.rotationMatrix =
+		glm::toMat3(glm::fquat(gltfNode.rotation[3], gltfNode.rotation[0], gltfNode.rotation[1], gltfNode.rotation[2]));
+
+	if (gltfNode.scale.size() != 0)
+		localTransform.scaleMatrix = glm::scale(glm::mat4(1.0f),
+		glm::vec3(gltfNode.scale[0], gltfNode.scale[1], gltfNode.scale[2]));
+
+	if (gltfNode.translation.size() != 0)
+		localTransform.translationMatrix = glm::translate(glm::mat4(1.0f),
+		glm::vec3(gltfNode.translation[0], gltfNode.translation[1], gltfNode.translation[2]));
 }
-glm::mat4 Node::GetTransform(Space space) const{
-	glm::mat4 localTransform = localRotation * localScale * localTranslation;
-	return space == Space::Global ? parentWorldTransform * localTransform : localTransform;
+Transform Node::GetTransform(Space space) const{
+	if (space == Space::Local) return localTransform;
+	else return parentTransform * localTransform;
 }
 std::string Node::GetName() const {
 	return name;
@@ -41,29 +42,30 @@ void Node::AddChild(Node* node) {
 
 void Node::Translate(glm::vec3 translation, Space space) {
 	if (space == Space::Global) 
-		translation = glm::inverse(parentWorldTransform) * glm::vec4(translation, 1.0f);
-	localTranslation = glm::translate(localTranslation, translation);
+		translation = glm::inverse(parentTransform.rotationMatrix) * translation;
+	localTransform.translationMatrix = glm::translate(localTransform.translationMatrix, translation);
 
 	UpdateChildrenTransforms();
 }
 void Node::Scale(glm::vec3 factor, Space space) {
 	if (space == Space::Global)
-		factor = glm::inverse(parentWorldTransform) * glm::vec4(factor, 1.0f);
-	localScale = glm::scale(localScale, factor);
+		factor = glm::inverse(parentTransform.scaleMatrix * parentTransform.rotationMatrix) * factor;
+	localTransform.scaleMatrix = glm::scale(glm::mat4(localTransform.scaleMatrix), factor);
 
 	UpdateChildrenTransforms();
 }
 void Node::Rotate(float angleInDegrees, glm::vec3 axis, Space space) {
 	if (space == Space::Global)
-		axis = glm::normalize(glm::inverse(parentWorldTransform) * glm::vec4(axis, 0.0f));
-	axis = glm::inverse(localRotation) * glm::vec4(axis, 0.0f);
-	localRotation = glm::rotate(localRotation, glm::radians(angleInDegrees), axis);
+		axis = glm::inverse(parentTransform.rotationMatrix) * axis;
+	axis = glm::inverse(localTransform.rotationMatrix) * axis;
+	localTransform.rotationMatrix =
+		glm::rotate(glm::mat4(localTransform.rotationMatrix), glm::radians(angleInDegrees), axis);
 
 	UpdateChildrenTransforms();
 }
 void Node::UpdateChildrenTransforms() {
 	for (Node* child : children) {
-		child->parentWorldTransform = GetTransform(Space::Global);
+		child->parentTransform = GetTransform(Space::Global);
 		child->UpdateChildrenTransforms();
 	}
 }

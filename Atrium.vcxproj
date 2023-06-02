@@ -148,7 +148,7 @@
     <ClCompile Include="src_display\Quad.cpp" />
     <ClCompile Include="src\Film.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
-    <ClCompile Include="src\AccelerationStructure.cpp" />
+    <ClCompile Include="src\AStructure.cpp" />
     <ClCompile Include="src\RenderCamera.cpp" />
     <ClCompile Include="src\Camera.cpp" />
     <ClCompile Include="src\Mesh.cpp" />
@@ -164,12 +164,13 @@
     <ClCompile Include="src\Vertex.cpp" />
     <ClCompile Include="src\Triangle.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src_display\Quad.h" />
     <ClInclude Include="src\Film.h" />
     <ClInclude Include="src\Buffer.h" />
-    <ClInclude Include="src\AccelerationStructure.h" />
+    <ClInclude Include="src\AStructure.h" />
     <ClInclude Include="src\RenderCamera.h" />
     <ClInclude Include="src\Camera.h" />
     <ClInclude Include="Includes\stb\stb_include.h">
@@ -184,11 +185,10 @@
     <ClInclude Include="src\Vertex.h" />
     <ClInclude Include="src\Triangle.h" />
     <ClInclude Include="src\Texture.h" />
+    <ClInclude Include="src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\Integrator.comp" />
-    <None Include="src\Shaders\Test.comp" />
-    <None Include="src\Shaders\Test2.glsl" />
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />
   </ItemGroup>

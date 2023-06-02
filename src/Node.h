@@ -4,7 +4,7 @@
 #include <vector>
 #include <TinyGLTF/tiny_gltf.h>
 #include <glm/glm.hpp>
-#include <glm/gtc/quaternion.hpp>
+#include "Transform.h"
 
 namespace Atrium {
 	enum class NodeType {
@@ -12,16 +12,13 @@ namespace Atrium {
 		Mesh,
 		Camera
 	};
-	enum class Space {
-		Global,
-		Local
-	};
+
 	class Node {
 	public:
-		Node(const tinygltf::Node& gltfNode, glm::mat4 parentWorldTransform);
+		Node(const tinygltf::Node& gltfNode, Transform parentTransform);
 		std::string ToString(unsigned int depth = 0) const;
 	
-		glm::mat4 GetTransform(Space space) const;
+		Transform GetTransform(Space space) const;
 
 		std::string GetName() const;
 		NodeType GetType() const;
@@ -33,17 +30,20 @@ namespace Atrium {
 		void Rotate(float angleInDegrees, glm::vec3 axis, Space space = Space::Global);
 		void UpdateChildrenTransforms();
 	private:
-		void LoadLocalTransforms(const tinygltf::Node& gltfNode);
+		void LoadLocalTransform(const tinygltf::Node& gltfNode);
 	public:
 		std::vector<Node*> children;
 	protected:
 		std::string name;
 		NodeType type;
 
-		glm::mat4 localRotation;
+		Transform parentTransform;
+		Transform localTransform;
+
+		/*glm::mat4 localRotation;
 		glm::mat4 localScale;
 		glm::mat4 localTranslation;
-		glm::mat4 parentWorldTransform;
+		glm::mat4 parentWorldTransform;*/
 	};
 }
 
