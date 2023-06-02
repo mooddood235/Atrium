@@ -25,40 +25,42 @@ void Buffer::LoadMeshes(const Mesh* mesh) {
 
 	for (Vertex vertex : mesh->vertices) {
 		vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
+		vertex.normal = mesh->GetTransform(Space::Global).rotationMatrix * vertex.normal;
 		vertices.push_back(vertex);
 	}
 	for (const Node* node : mesh->children) 
 		if (node->GetType() == NodeType::Mesh) LoadMeshes((const Mesh*)node);
 }
 void Buffer::GenerateSSBOs() {
-	/*struct GPUVertex {
+	struct GPUVertex {
 		glm::vec3 p;
 		float pad0;
+		glm::vec3 n;
+		float pad1;
+		GPUVertex(glm::vec3 position, glm::vec3 normal) {
+			p = position;
+			n = normal;
+		}
 	};
 	struct GPUTriangle {
 		unsigned int i0, i1, i2;
 		float pad0;
 	};
-	std::vector<GPUVertex> GPUVertices = std::vector<GPUVertex>(vertices.size());
-	for (const Vertex& vertex : vertices) GPUVertices.push_back(GPUVertex{ vertex.position });
+	GPUVertex* GPUVertices = (GPUVertex*)malloc(sizeof(GPUVertex) * vertices.size());
+	for (unsigned int i = 0; i < vertices.size(); i++) GPUVertices[i] = GPUVertex(vertices[i].position, vertices[i].normal);
 	
-	std::vector<GPUTriangle> GPUTriangles = std::vector<GPUTriangle>(triangles.size());
-	for (const Triangle& triangle : triangles) GPUTriangles.push_back(GPUTriangle{ triangle.index0, triangle.index1, triangle.index2 });*/
+	GPUTriangle* GPUTriangles = (GPUTriangle*)malloc(sizeof(GPUTriangle) * triangles.size());
+	for (unsigned int i = 0; i < triangles.size(); i++)
+		GPUTriangles[i] = GPUTriangle{ triangles[i].index0, triangles[i].index1, triangles[i].index2 };
 
 	glGenBuffers(1, &verticesSSBO);
 	glGenBuffers(1, &trianglesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, 16 * vertices.size(), NULL, GL_STATIC_DRAW);
-
-	for (unsigned int i = 0; i < vertices.size(); i++) 
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, i * 16, 12, &vertices[i]);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
 	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, 16 * triangles.size(), NULL, GL_STATIC_DRAW);
-
-	for (unsigned int i = 0; i < triangles.size(); i++) 
-		glBufferSubData(GL_SHADER_STORAGE_BUFFER, i * 16, 12, &triangles[i]);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * triangles.size(), GPUTriangles, GL_STATIC_DRAW);
 	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 }
