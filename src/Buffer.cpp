@@ -22,10 +22,11 @@ void Buffer::LoadMeshes(const Mesh* mesh) {
 		triangles.push_back(triangle + vertices.size());
 	}
 	glm::mat4 modelMatrix = mesh->GetTransform(Space::Global).GetMatrix();
+	glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 
 	for (Vertex vertex : mesh->vertices) {
 		vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
-		vertex.normal = mesh->GetTransform(Space::Global).rotationMatrix * vertex.normal;
+		vertex.normal = glm::normalize(normalMatrix * vertex.normal);
 		vertices.push_back(vertex);
 	}
 	for (const Node* node : mesh->children) 
@@ -63,4 +64,7 @@ void Buffer::GenerateSSBOs() {
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * triangles.size(), GPUTriangles, GL_STATIC_DRAW);
 	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	
+	free(GPUVertices);
+	free(GPUTriangles);
 }

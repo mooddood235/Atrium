@@ -17,5 +17,6 @@ vec3 ACESFilm(vec3 x)
 
 void main(){
 	vec2 uv = (fragCoord + 1.0) / 2.0;
-	fragColor = vec4(ACESFilm(textureLod(film, uv, 0.0).rgb), 1.0);
+    vec3 color = textureLod(film, uv, 0.0).rgb;
+	fragColor = vec4(color / (color + 0.5), 0.0);
 }

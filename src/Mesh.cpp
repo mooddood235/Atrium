@@ -41,7 +41,7 @@ void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::
 			positions.resize(accessor.count);
 			for (unsigned int i = 0; i < positions.size(); i++) positions[i] = *(glm::vec3*)(data + stride * i);
 		}
-		if (attributeName == "NORMAL") {
+		else if (attributeName == "NORMAL") {
 			if (!(accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == GL_FLOAT)) {
 				std::cout << "LOAD GLTF ERROR: Only normal data that is Vec3s of floats is supported." << std::endl;
 				exit(-1);

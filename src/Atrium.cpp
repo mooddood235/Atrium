@@ -25,7 +25,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Suzanne.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/UVSphere.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
