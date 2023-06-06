@@ -14,7 +14,6 @@ namespace Atrium {
 		Buffer(const Scene& scene);
 		void Bind() const override;
 	private:
-		void LoadMeshes(const Mesh* mesh);
 		void GenerateSSBOs();
 	private:
 		std::vector<Vertex> vertices;

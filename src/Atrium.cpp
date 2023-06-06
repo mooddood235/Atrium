@@ -11,6 +11,7 @@
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include "Film.h"
+#include "BVH.h"
 
 int main()
 {
@@ -29,6 +30,7 @@ int main()
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
+    Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::EqualCounts);
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
@@ -50,7 +52,7 @@ int main()
         lastTime = currentTime;
         
         camera->TransformFromInput(window, deltaTime);
-        Atrium::RenderCamera::Render(film, *camera, buffer, environmentMap);
+        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());

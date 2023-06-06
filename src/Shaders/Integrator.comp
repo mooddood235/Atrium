@@ -60,9 +60,6 @@ void main(){
             color = hitInfo.n;
         }
     }
-    if (closestHit.didHit){
-        color = SampleEnvMap(reflect(ray.d, closestHit.n));
-    }
 	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
 }
 
