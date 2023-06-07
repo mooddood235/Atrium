@@ -20,7 +20,7 @@ namespace Atrium {
 	private:
 		void LoadMeshes(const Scene& scene);
 		BVHNode* BuildRecursive(unsigned int begin, unsigned int end);
-		unsigned int SplitEqualCounts(unsigned int begin, unsigned int end);
+		unsigned int SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb);
 		void GenerateSSBOs();
 		int Flatten(const BVHNode* bvhNode, int* offset);
 	private:

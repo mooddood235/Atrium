@@ -9,7 +9,7 @@ namespace Atrium {
 	public:
 		AABB aabb;
 		BVHNode* children[2];
-		int splitAxis, offset, count;
+		unsigned int splitAxis, offset, count;
 	};
 }
 

@@ -10,7 +10,7 @@ BVH::BVH(const Scene& scene, SplitMethod splitMethod) {
 	numNodes = 0;
 
 	LoadMeshes(scene);
-	orderedTriangles = std::vector<BVHTriangle>();
+	orderedTriangles = std::vector<BVHTriangle>(); orderedTriangles.reserve(triangles.size());
 
 	root = BuildRecursive(0, triangles.size() - 1);
 
@@ -39,12 +39,12 @@ BVHNode* BVH::BuildRecursive(unsigned int begin, unsigned int end) {
 		return new BVHNode(aabb, nullptr, nullptr, dim, orderedTriangles.size() - (end - begin + 1), end - begin + 1);
 	}
 
-	unsigned int split = SplitEqualCounts(begin, end);
+	unsigned int split = SplitEqualCounts(begin, end, aabb);
 
 	BVHNode* left = BuildRecursive(begin, split);
 	BVHNode* right = BuildRecursive(split + 1, end);
 
-	return new BVHNode(aabb, left, right, dim, -1, 0);
+	return new BVHNode(aabb, left, right, dim, 0, 0);
 }
 void BVH::GenerateSSBOs() {
 	#pragma pack(push, 1)
@@ -62,8 +62,8 @@ void BVH::GenerateSSBOs() {
 		float pad0;
 		glm::vec3 max;
 		float pad1;
-		int trianglesOffset;
-		int secondChildOffset;
+		unsigned int trianglesOffset;
+		unsigned int secondChildOffset;
 		unsigned int trianglesCount;
 		unsigned int splitAxis;
 
@@ -90,6 +90,7 @@ void BVH::GenerateSSBOs() {
 
 	glGenBuffers(1, &verticesSSBO);
 	glGenBuffers(1, &trianglesSSBO);
+	glGenBuffers(1, &nodesSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
@@ -97,11 +98,14 @@ void BVH::GenerateSSBOs() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * triangles.size(), GPUTriangles, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, nodesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUBVHNode) * numNodes, GPUBVHNodes, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	delete GPUVertices;
-	delete GPUTriangles;
-	delete GPUBVHNodes;
+	delete[] GPUVertices;
+	delete[] GPUTriangles;
+	delete[] GPUBVHNodes;
 }
 int BVH::Flatten(const BVHNode* bvhNode, int* offset){
 	FlatBVHNode* flatBVHNode = flatRepresentation + *offset;
@@ -122,15 +126,14 @@ int BVH::Flatten(const BVHNode* bvhNode, int* offset){
 void BVH::Bind() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, verticesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, trianglesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, nodesSSBO);
 }
 void BVH::LoadMeshes(const Scene& scene) {
 	std::vector<Triangle> noAABBTriangles;
 	AStructure::LoadMeshes(scene, vertices, noAABBTriangles);
-	triangles = std::vector<BVHTriangle>(noAABBTriangles.size());
+	triangles = std::vector<BVHTriangle>(); triangles.reserve(noAABBTriangles.size());
 
-	for (unsigned int i = 0; i < noAABBTriangles.size(); i++) {
-		Triangle triangle = noAABBTriangles[i];
-
+	for (const Triangle& triangle : noAABBTriangles) {
 		Vertex v0 = vertices[triangle.index0];
 		Vertex v1 = vertices[triangle.index1];
 		Vertex v2 = vertices[triangle.index2];
@@ -140,15 +143,12 @@ void BVH::LoadMeshes(const Scene& scene) {
 
 		AABB aabb = AABB(min, max);
 
-		triangles[i] = BVHTriangle(triangle, aabb);
+		triangles.push_back(BVHTriangle(triangle, aabb));
 	}
 }
 
 
-unsigned int BVH::SplitEqualCounts(unsigned int begin, unsigned int end){
-	AABB aabb = AABB();
-	for (unsigned int i = begin; i <= end; i++) aabb = AABB::Union(aabb, triangles[i].aabb);
-	
+unsigned int BVH::SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb){	
 	unsigned int dim = aabb.GetMaxDimension();
 	unsigned int mid = begin + (end - begin) / 2;
 

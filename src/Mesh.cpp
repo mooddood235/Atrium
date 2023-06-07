@@ -54,9 +54,9 @@ void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::
 		std::cout << "LOAD GLTF ERROR: Mismatching attribute count." << std::endl;
 		exit(-1);
 	}
-	vertices.resize(positions.size());
+	vertices.reserve(positions.size());
 
-	for (unsigned int i = 0; i < vertices.size(); i++) vertices[i] = Vertex(positions[i], normals[i]);
+	for (unsigned int i = 0; i < positions.size(); i++) vertices.push_back(Vertex(positions[i], normals[i]));
 }
 void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
 	const tinygltf::Accessor& accessor = model.accessors[primitive.indices];
@@ -72,6 +72,6 @@ void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Mod
 		std::cout << "Only indices that are scaler unsigned shorts are supported." << std::endl;
 		exit(-1);
 	}
-	indices.resize(accessor.count);
-	for (unsigned int i = 0; i < indices.size(); i++) indices[i] = *(unsigned short*)(data + stride * i);
+	indices.reserve(accessor.count);
+	for (unsigned int i = 0; i < accessor.count; i++) indices.push_back(*(unsigned short*)(data + stride * i));
 }

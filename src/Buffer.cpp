@@ -44,6 +44,6 @@ void Buffer::GenerateSSBOs() {
 	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
-	delete GPUVertices;
-	delete GPUTriangles;
+	delete[] GPUVertices;
+	delete[] GPUTriangles;
 }
