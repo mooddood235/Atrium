@@ -61,14 +61,19 @@ layout (std140, binding = 2) buffer BVHNodes{
     BVHNode bvhNodes[];
 };
 
+// ----------------- Work group -------------
 layout(local_size_x = 8, local_size_y = 4) in;
+
+// -------------- Shared --------------------
+shared uint stack[gl_WorkGroupSize.x * gl_WorkGroupSize.y][20];
+
 void main(){
 	Ray ray = GenCamRay();
     vec3 color;
 
     HitInfo hitInfo = Hit_BVH(ray);
 
-    if (hitInfo.didHit) color = hitInfo.n;
+    if (hitInfo.didHit) color = hitInfo.n;//SampleEnvMap(reflect(ray.d, hitInfo.n));
     else color = SampleEnvMap(ray.d).rgb;
 
 	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
@@ -162,15 +167,16 @@ HitInfo Hit_BVH(Ray ray){
     HitInfo closestHit = NoHit;
     HitInfo hitInfo;
 
-    uint stack[10];
-    stack[0] = 0;
+    uint workerStackIndex = gl_LocalInvocationID.x + gl_LocalInvocationID.y * gl_WorkGroupSize.x;
+
+    stack[workerStackIndex][0] = 0;
     uint stackSize = 1;
 
     vec3 invDir = vec3(1.0 / ray.d.x, 1.0 / ray.d.y, 1.0 / ray.d.z);
     bool dirIsNeg[3] = {invDir.x < 0, invDir.y < 0, invDir.z < 0};
 
     while (stackSize > 0){
-        uint currNodeIndex = stack[--stackSize];
+        uint currNodeIndex = stack[workerStackIndex][--stackSize];
         BVHNode node = bvhNodes[currNodeIndex];
 
         hitInfo = Hit_AABB(ray, invDir, node.aabbMin, node.aabbMax);
@@ -184,12 +190,12 @@ HitInfo Hit_BVH(Ray ray){
             }
             else{
                 if (dirIsNeg[node.splitAxis]){
-                    stack[stackSize++] = currNodeIndex + 1;
-                    stack[stackSize++] = node.secondChildOffset;
+                    stack[workerStackIndex][stackSize++] = currNodeIndex + 1;
+                    stack[workerStackIndex][stackSize++] = node.secondChildOffset;
                 }
                 else{
-                    stack[stackSize++] = node.secondChildOffset;
-                    stack[stackSize++] = currNodeIndex + 1;
+                    stack[workerStackIndex][stackSize++] = node.secondChildOffset;
+                    stack[workerStackIndex][stackSize++] = currNodeIndex + 1;
                 }
             }
         }

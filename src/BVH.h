@@ -1,5 +1,7 @@
 #pragma once
 
+#include <span>
+
 #include "AStructure.h"
 #include "Scene.h"
 #include "Vertex.h"
@@ -20,12 +22,12 @@ namespace Atrium {
 		void Bind() const override;
 	private:
 		void LoadMeshes(const Scene& scene);
-		BVHNode* BuildRecursive(unsigned int begin, unsigned int end);
-		BVHNode* CreateLeaf(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim);
+		BVHNode* BuildRecursive(std::span<BVHTriangle> triangles);
+		BVHNode* CreateLeaf(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim);
 		int Flatten(const BVHNode* bvhNode, int* offset);
 
-		int SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim);
-		int SplitSAH(unsigned int begin, unsigned int end, const AABB& aabb, const AABB& centroidAABB);
+		int SplitEqualCounts(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim);
+		int SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB& centroidAABB);
 
 		void GenerateSSBOs();
 	private:

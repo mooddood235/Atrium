@@ -16,7 +16,7 @@ BVH::BVH(const Scene& scene, SplitMethod splitMethod) {
 	LoadMeshes(scene);
 	orderedTriangles = std::vector<BVHTriangle>(); orderedTriangles.reserve(triangles.size());
 
-	root = BuildRecursive(0, triangles.size() - 1);
+	root = BuildRecursive(std::span<BVHTriangle>(triangles));
 
 	triangles.swap(orderedTriangles);
 	orderedTriangles.resize(0);
@@ -27,7 +27,7 @@ BVH::BVH(const Scene& scene, SplitMethod splitMethod) {
 
 	GenerateSSBOs();
 }
-BVHNode* BVH::BuildRecursive(unsigned int begin, unsigned int end) {
+BVHNode* BVH::BuildRecursive(std::span<BVHTriangle> triangles) {
 	numNodes++;
 
 	AABB aabb;
@@ -38,24 +38,88 @@ BVHNode* BVH::BuildRecursive(unsigned int begin, unsigned int end) {
 	}
 	unsigned int dim = centroidAABB.GetMaxDimension();
 
-	if (begin == end || aabb.GetSurfaceArea() == 0 || centroidAABB.max[dim] == centroidAABB.min[dim])
-		return CreateLeaf(begin, end, aabb, dim);
+	if (triangles.size() == 1 || aabb.GetSurfaceArea() == 0 || centroidAABB.max[dim] == centroidAABB.min[dim])
+		return CreateLeaf(triangles, aabb, dim);
 
 	int split;
-	if (splitMethod == SplitMethod::EqualCounts) split = SplitEqualCounts(begin, end, aabb, dim);
-	else split = SplitSAH(begin, end, aabb, centroidAABB);
+	if (splitMethod == SplitMethod::EqualCounts) split = SplitEqualCounts(triangles, aabb, dim);
+	else split = SplitSAH(triangles, aabb, centroidAABB);
 
-	if (split == -1) return CreateLeaf(begin, end, aabb, dim);
+	if (split == -1) return CreateLeaf(triangles, aabb, dim);
 
-	BVHNode* left = BuildRecursive(begin, split);
-	BVHNode* right = BuildRecursive(split + 1, end);
+	BVHNode* left = BuildRecursive(triangles.subspan(0, split));
+	BVHNode* right = BuildRecursive(triangles.subspan(split));
 
 	return new BVHNode(aabb, left, right, dim, 0, 0);
 }
-BVHNode* BVH::CreateLeaf(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim) {
-	orderedTriangles.insert(orderedTriangles.end(), triangles.begin() + begin, triangles.begin() + end + 1);
-	return new BVHNode(aabb, nullptr, nullptr, dim, orderedTriangles.size() - (end - begin + 1), end - begin + 1);
+BVHNode* BVH::CreateLeaf(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim) {
+	orderedTriangles.insert(orderedTriangles.end(), triangles.begin(), triangles.end());
+	return new BVHNode(aabb, nullptr, nullptr, dim, orderedTriangles.size() - triangles.size(), triangles.size());
 }
+int BVH::SplitEqualCounts(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim) {
+	unsigned int mid = triangles.size() / 2;
+
+	std::nth_element(triangles.begin(), triangles.begin() + mid, triangles.end(),
+		[dim](const BVHTriangle& t0, const BVHTriangle& t1) {
+			return t0.aabb.GetCentroid()[dim] < t1.aabb.GetCentroid()[dim];
+		}
+	);
+	return mid;
+}
+
+int BVH::SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB& centroidAABB) {
+	unsigned int dim = centroidAABB.GetMaxDimension();
+
+	const unsigned int numBuckets = 12;
+	BVHSplitBucket buckets[numBuckets];
+
+	for (const BVHTriangle& triangle : triangles) {
+		int bucket = numBuckets * centroidAABB.GetOffset(triangle.aabb.GetCentroid())[dim];
+		if (bucket == numBuckets) bucket--;
+		buckets[bucket].count++;
+		buckets[bucket].aabb = AABB::Union(buckets[bucket].aabb, triangle.aabb);
+	}
+	const unsigned int numSplits = numBuckets - 1;
+	float costs[numSplits] = { 0 };
+
+	unsigned int countBelow = 0;
+	AABB aabbBelow;
+	for (unsigned int i = 0; i < numSplits; i++) {
+		aabbBelow = AABB::Union(aabbBelow, buckets[i].aabb);
+		countBelow += buckets[i].count;
+		costs[i] += countBelow * aabbBelow.GetSurfaceArea();
+	}
+	unsigned int countAbove = 0;
+	AABB aabbAbove;
+	for (unsigned int i = numSplits; i >= 1; i--) {
+		aabbAbove = AABB::Union(aabbAbove, buckets[i].aabb);
+		countAbove += buckets[i].count;
+		costs[i - 1] += countAbove * aabbAbove.GetSurfaceArea();
+	}
+	unsigned int minCostSplitBucket = 0;
+	float minCost = INFINITY;
+	for (unsigned int i = 0; i < numSplits; i++) {
+		if (costs[i] < minCost) {
+			minCostSplitBucket = i;
+			minCost = costs[i];
+		}
+	}
+	float leafCost = triangles.size();
+	minCost = 1.0f / 2.0f + minCost / aabb.GetSurfaceArea();
+
+	if (minCost < leafCost) {
+		auto midIter = std::partition(triangles.begin(), triangles.end(),
+			[=](const BVHTriangle& bvhTriangle) {
+				int bucket = numBuckets * centroidAABB.GetOffset(bvhTriangle.aabb.GetCentroid())[dim];
+				if (bucket == numBuckets) bucket--;
+				return bucket <= minCostSplitBucket;
+			}
+		);
+		return midIter - triangles.begin();
+	}
+	return -1;
+}
+
 void BVH::GenerateSSBOs() {
 	#pragma pack(push, 1)
 	struct GPUTriangle {
@@ -155,69 +219,6 @@ void BVH::LoadMeshes(const Scene& scene) {
 
 		triangles.push_back(BVHTriangle(triangle, aabb));
 	}
-}
-int BVH::SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim){	
-	unsigned int mid = begin + (end - begin) / 2;
-
-	std::nth_element(triangles.begin() + begin, triangles.begin() + mid, triangles.begin() + end + 1,
-		[dim](const BVHTriangle& t0, const BVHTriangle& t1) {
-			return t0.aabb.GetCentroid()[dim] < t1.aabb.GetCentroid()[dim];
-		}
-		);
-	return mid;
-}
-
-int BVH::SplitSAH(unsigned int begin, unsigned int end, const AABB& aabb, const AABB& centroidAABB){
-	unsigned int dim = aabb.GetMaxDimension();
-
-	const unsigned int numBuckets = 12;
-	BVHSplitBucket buckets[numBuckets];
-
-	for (unsigned int i = begin; i <= end; i++) {
-		int bucket = numBuckets * centroidAABB.GetOffset(triangles[i].aabb.GetCentroid())[dim];
-		if (bucket == numBuckets) bucket--;
-		buckets[bucket].count++;
-		buckets[bucket].aabb = AABB::Union(buckets[bucket].aabb, triangles[i].aabb);
-	}
-	const unsigned int numSplits = numBuckets - 1;
-	float costs[numSplits] = { 0 };
-
-	unsigned int countBelow = 0;
-	AABB aabbBelow;
-	for (unsigned int i = 0; i < numSplits; i++) {
-		aabbBelow = AABB::Union(aabbBelow, buckets[i].aabb);
-		countBelow += buckets[i].count;
-		costs[i] += countBelow * aabbBelow.GetSurfaceArea();
-	}
-	unsigned int countAbove = 0;
-	AABB aabbAbove;
-	for (unsigned int i = numSplits; i >= 1; i--) {
-		aabbAbove = AABB::Union(aabbAbove, buckets[i].aabb);
-		countAbove += buckets[i].count;
-		costs[i - 1] += countAbove * aabbAbove.GetSurfaceArea();
-	}
-	unsigned int minCostSplitBucket = 0;
-	float minCost = INFINITY;
-	for (unsigned int i = 0; i < numSplits; i++) {
-		if (costs[i] < minCost) {
-			minCostSplitBucket = i;
-			minCost = costs[i];
-		}
-	}
-	float leafCost = end - begin + 1;
-	minCost = 1.0f / 2.0f + minCost / aabb.GetSurfaceArea();
-
-	if (minCost < leafCost) {
-		auto midIter = std::partition(triangles.begin() + begin, triangles.begin() + end + 1,
-			[=](const BVHTriangle& bvhTriangle) {
-				int bucket = numBuckets * centroidAABB.GetOffset(bvhTriangle.aabb.GetCentroid())[dim];
-				if (bucket == numBuckets) bucket--;
-				return bucket <= minCostSplitBucket;
-			}
-		);
-		return midIter - triangles.begin() - 1;
-	}
-	return -1;
 }
 
 
