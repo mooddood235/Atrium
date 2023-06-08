@@ -43,7 +43,8 @@ Ray GenCamRay();
 vec3 At(Ray ray, float t);
 vec3 SampleEnvMap(vec3 dir);
 HitInfo Hit_Triangle(Ray ray, Triangle triangle);
-HitInfo Hit_AABB(vec3 cornerMin, vec3 cornerMax, Ray ray);
+HitInfo Hit_AABB(Ray ray, vec3 invDir, vec3 cornerMin, vec3 cornerMax);
+HitInfo Hit_BVH(Ray ray);
 // ---------------- Uniforms ----------------
 uniform Camera camera;
 layout(rgba32f, binding = 0) uniform image2D film;
@@ -63,48 +64,12 @@ layout (std140, binding = 2) buffer BVHNodes{
 layout(local_size_x = 8, local_size_y = 4) in;
 void main(){
 	Ray ray = GenCamRay();
-    vec3 color = SampleEnvMap(ray.d).rgb;
+    vec3 color;
 
-    HitInfo closestHit = NoHit;
+    HitInfo hitInfo = Hit_BVH(ray);
 
-//    for (uint i = 0; i < triangles.length(); i++){
-//        HitInfo hitInfo = Hit_Triangle(ray, triangles[i]);
-//        if (hitInfo.didHit && hitInfo.t < closestHit.t){
-//            closestHit = hitInfo;
-//            color = hitInfo.n;
-//        }
-//    }
-    
-    uint[10] stack;
-    uint stackSize = 1;
-    stack[0] = 0;
-
-    while (stackSize > 0){
-        uint nodeIndex = stack[stackSize - 1];
-        stackSize--;
-        BVHNode node = bvhNodes[nodeIndex];
-
-        HitInfo hitInfo = Hit_AABB(node.aabbMin, node.aabbMax, ray);
-
-        if (!hitInfo.didHit) continue;
-
-
-        if (node.trianglesCount > 0){
-            for (uint i = 0; i < node.trianglesCount; i++){
-                HitInfo hitInfo = Hit_Triangle(ray, triangles[node.trianglesOffset + i]);
-                if (hitInfo.didHit && hitInfo.t < closestHit.t){
-                    closestHit = hitInfo;
-                    color = hitInfo.n;
-                }
-            }
-        }
-        else{
-            stack[stackSize] = nodeIndex + 1;
-            stack[stackSize + 1] = node.secondChildOffset;
-            stackSize += 2;
-        }
-    }
-
+    if (hitInfo.didHit) color = hitInfo.n;
+    else color = SampleEnvMap(ray.d).rgb;
 
 	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
 }
@@ -178,12 +143,12 @@ HitInfo Hit_Triangle(Ray ray, Triangle triangle){
 
     return HitInfo(true, t, At(ray, t), n);
 }
- HitInfo Hit_AABB(vec3 cornerMin, vec3 cornerMax, Ray ray){
-	float tx1 = (cornerMin.x - ray.o.x) / ray.d.x, tx2 = (cornerMax.x - ray.o.x) / ray.d.x;
+HitInfo Hit_AABB(Ray ray, vec3 invDir, vec3 cornerMin, vec3 cornerMax){
+	float tx1 = (cornerMin.x - ray.o.x) * invDir.x, tx2 = (cornerMax.x - ray.o.x) * invDir.x;
     float tmin = min( tx1, tx2 ), tmax = max( tx1, tx2 );
-    float ty1 = (cornerMin.y - ray.o.y) / ray.d.y, ty2 = (cornerMax.y - ray.o.y) / ray.d.y;
+    float ty1 = (cornerMin.y - ray.o.y) * invDir.y, ty2 = (cornerMax.y - ray.o.y) * invDir.y;
     tmin = max( tmin, min( ty1, ty2 ) ), tmax = min( tmax, max( ty1, ty2 ) );
-    float tz1 = (cornerMin.z - ray.o.z) / ray.d.z, tz2 = (cornerMax.z - ray.o.z) / ray.d.z;
+    float tz1 = (cornerMin.z - ray.o.z) * invDir.z, tz2 = (cornerMax.z - ray.o.z) * invDir.z;
     tmin = max( tmin, min( tz1, tz2 ) ), tmax = min( tmax, max( tz1, tz2 ) );
     if (tmax >= tmin && tmax > 0){
 		HitInfo hitInfo;
@@ -192,4 +157,42 @@ HitInfo Hit_Triangle(Ray ray, Triangle triangle){
 		return hitInfo;
 	}
 	return NoHit;
+}
+HitInfo Hit_BVH(Ray ray){
+    HitInfo closestHit = NoHit;
+    HitInfo hitInfo;
+
+    uint stack[10];
+    stack[0] = 0;
+    uint stackSize = 1;
+
+    vec3 invDir = vec3(1.0 / ray.d.x, 1.0 / ray.d.y, 1.0 / ray.d.z);
+    bool dirIsNeg[3] = {invDir.x < 0, invDir.y < 0, invDir.z < 0};
+
+    while (stackSize > 0){
+        uint currNodeIndex = stack[--stackSize];
+        BVHNode node = bvhNodes[currNodeIndex];
+
+        hitInfo = Hit_AABB(ray, invDir, node.aabbMin, node.aabbMax);
+
+        if (hitInfo.didHit && hitInfo.t < closestHit.t){
+            if (node.trianglesCount > 0){
+                for (uint i = 0; i < node.trianglesCount; i++){
+                    hitInfo = Hit_Triangle(ray, triangles[node.trianglesOffset + i]);
+                    if (hitInfo.didHit && hitInfo.t < closestHit.t) closestHit = hitInfo;
+                }
+            }
+            else{
+                if (dirIsNeg[node.splitAxis]){
+                    stack[stackSize++] = currNodeIndex + 1;
+                    stack[stackSize++] = node.secondChildOffset;
+                }
+                else{
+                    stack[stackSize++] = node.secondChildOffset;
+                    stack[stackSize++] = currNodeIndex + 1;
+                }
+            }
+        }
+    }
+    return closestHit;
 }
