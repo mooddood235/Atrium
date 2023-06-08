@@ -68,10 +68,15 @@ void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Mod
 
 	const unsigned char* data = buffer.data.data() + totalByteOffset;
 
-	if (!(accessor.type == TINYGLTF_TYPE_SCALAR && accessor.componentType == GL_UNSIGNED_SHORT)) {
-		std::cout << "Only indices that are scaler unsigned shorts are supported." << std::endl;
+	if (!(accessor.type == TINYGLTF_TYPE_SCALAR
+		&& (accessor.componentType == GL_UNSIGNED_SHORT || accessor.componentType == GL_UNSIGNED_INT))) {
+
+		std::cout << "Only indices that are scaler unsigned shorts/ints are supported." << std::endl;
 		exit(-1);
 	}
 	indices.reserve(accessor.count);
-	for (unsigned int i = 0; i < accessor.count; i++) indices.push_back(*(unsigned short*)(data + stride * i));
+	for (unsigned int i = 0; i < accessor.count; i++) {
+		if (accessor.componentType == GL_UNSIGNED_SHORT) indices.push_back(*(unsigned short*)(data + stride * i));
+		else  indices.push_back(*(unsigned int*)(data + stride * i));
+	}
 }

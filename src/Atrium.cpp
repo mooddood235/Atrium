@@ -27,14 +27,14 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Bunny.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Dragon.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::Texture environmentMap("EnvironmentMaps/rainforest_trail_4k.hdr");
+    Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
