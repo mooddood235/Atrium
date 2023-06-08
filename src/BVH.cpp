@@ -70,7 +70,7 @@ int BVH::SplitEqualCounts(std::span<BVHTriangle> triangles, const AABB& aabb, un
 int BVH::SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB& centroidAABB) {
 	unsigned int dim = centroidAABB.GetMaxDimension();
 
-	const unsigned int numBuckets = 12;
+	const unsigned int numBuckets = 24;
 	BVHSplitBucket buckets[numBuckets];
 
 	for (const BVHTriangle& triangle : triangles) {
@@ -220,5 +220,10 @@ void BVH::LoadMeshes(const Scene& scene) {
 		triangles.push_back(BVHTriangle(triangle, aabb));
 	}
 }
-
-
+unsigned int BVH::GetDepth() const {
+	return GetDepthHelper(root);
+}
+unsigned int BVH::GetDepthHelper(const BVHNode* node) const {
+	if (!node) return 0;
+	return 1 + glm::max(GetDepthHelper(node->children[0]), GetDepthHelper(node->children[1]));
+}

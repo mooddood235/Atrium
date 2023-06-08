@@ -20,6 +20,7 @@ namespace Atrium {
 	public:
 		BVH(const Scene& scene, SplitMethod splitMethod);
 		void Bind() const override;
+		unsigned int GetDepth() const;
 	private:
 		void LoadMeshes(const Scene& scene);
 		BVHNode* BuildRecursive(std::span<BVHTriangle> triangles);
@@ -30,6 +31,8 @@ namespace Atrium {
 		int SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB& centroidAABB);
 
 		void GenerateSSBOs();
+
+		unsigned int GetDepthHelper(const BVHNode* node) const;
 	private:
 		BVHNode* root;
 		FlatBVHNode* flatRepresentation;
