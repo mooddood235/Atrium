@@ -1,6 +1,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <string>
+#include <algorithm>
 
 #include "../src_display/Quad.h"
 
@@ -29,8 +30,7 @@ int main()
     Atrium::Scene cubeScene = Atrium::Scene("Models/UVSphere.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
-    Atrium::Buffer buffer = Atrium::Buffer(cubeScene);
-    Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::EqualCounts);
+    Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);

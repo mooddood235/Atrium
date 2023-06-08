@@ -1,10 +1,11 @@
 #include "AABB.h"
+#include <limits>
 
 using namespace Atrium;
 
 AABB::AABB() {
-    min = glm::vec3(INFINITY);
-    max = glm::vec3(-INFINITY);
+    min = glm::vec3(std::numeric_limits<float>::max());
+    max = glm::vec3(std::numeric_limits<float>::lowest());
 }
 AABB::AABB(glm::vec3 min, glm::vec3 max) {
     this->min = min;
@@ -38,4 +39,15 @@ unsigned int AABB::GetMaxDimension() const{
 float AABB::GetSurfaceArea() const{
     glm::vec3 d = max - min;
     return 2.0f * (d.x * d.y + d.x * d.z + d.y * d.z);
+}
+
+glm::vec3 AABB::GetOffset(glm::vec3 v) const{
+    glm::vec3 o = v - min;
+    if (max.x > min.x)
+        o.x /= max.x - min.x;
+    if (max.y > min.y)
+        o.y /= max.y - min.y;
+    if (max.z > min.z)
+        o.z /= max.z - min.z;
+    return o;
 }

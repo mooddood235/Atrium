@@ -10,7 +10,8 @@
 
 namespace Atrium {
 	enum class SplitMethod {
-		EqualCounts
+		EqualCounts,
+		SAH
 	};
 
 	class BVH : public AStructure{
@@ -20,9 +21,13 @@ namespace Atrium {
 	private:
 		void LoadMeshes(const Scene& scene);
 		BVHNode* BuildRecursive(unsigned int begin, unsigned int end);
-		unsigned int SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb);
-		void GenerateSSBOs();
+		BVHNode* CreateLeaf(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim);
 		int Flatten(const BVHNode* bvhNode, int* offset);
+
+		int SplitEqualCounts(unsigned int begin, unsigned int end, const AABB& aabb, unsigned int dim);
+		int SplitSAH(unsigned int begin, unsigned int end, const AABB& aabb, const AABB& centroidAABB);
+
+		void GenerateSSBOs();
 	private:
 		BVHNode* root;
 		FlatBVHNode* flatRepresentation;

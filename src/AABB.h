@@ -9,6 +9,8 @@ namespace Atrium {
 		glm::vec3 GetCentroid() const;
 		unsigned int GetMaxDimension() const;
 		float GetSurfaceArea() const;
+		glm::vec3 GetOffset(glm::vec3 v) const;
+
 		static AABB Union(AABB aabb0, AABB aabb1);
 		static AABB Union(AABB aabb, glm::vec3 v);
 
