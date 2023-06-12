@@ -34,7 +34,7 @@ int main()
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
+    Atrium::Texture environmentMap("EnvironmentMaps/blue_photo_studio_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
@@ -60,7 +60,8 @@ int main()
         quad.Draw();
         displayShader.UnUse();
 
-        glfwSwapBuffers(window);
+        glFlush();
+        //glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
@@ -73,6 +74,7 @@ GLFWwindow* InitGLFW() {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
     GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "Atrium", NULL, NULL);
 
