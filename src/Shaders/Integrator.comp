@@ -110,7 +110,7 @@ vec3 SampleEnvMap(vec3 dir)
     uv *= invAtan;
     uv += 0.5;
     
-	return texture(environmentMap, uv).rgb;
+	return textureLod(environmentMap, uv, 0.0).rgb;
 };
 HitInfo Hit_Triangle(Ray ray, Triangle triangle){
     Vertex v0 = vertices[triangle.i0];
