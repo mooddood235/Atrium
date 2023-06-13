@@ -52,7 +52,7 @@ int main()
         lastTime = currentTime;
         
         camera->TransformFromInput(window, deltaTime);
-        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap);
+        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, 10, 10, 2023);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());

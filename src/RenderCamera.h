@@ -11,7 +11,14 @@ namespace Atrium {
 	class RenderCamera {
 	public:
 		static void Init();
-		static void Render(const Film& film, const Camera& camera, const AStructure& aStructure, const Texture& environmentMap);
+		static void Render(
+			const Film& film,
+			const Camera& camera,
+			const AStructure& aStructure,
+			const Texture& environmentMap,
+			unsigned int samples,
+			unsigned int depth,
+			unsigned int seed);
 	private:
 		static ShaderProgram integrator;
 	};

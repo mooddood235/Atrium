@@ -39,16 +39,19 @@ struct BVHNode {
 };
 // ---------------- Constants ----------------------------
 HitInfo NoHit = HitInfo(false, 1./0., vec3(0), vec3(0));
-const float EPSILON = 0.0000001;
 
 // ---------------- Function Declarations ----------------
 Ray GenCamRay();
+vec3 Sample();
 vec3 At(Ray ray, float t);
 vec3 SampleEnvMap(vec3 dir);
 HitInfo Hit_Triangle(Ray ray, Triangle triangle);
 HitInfo Hit_AABB(Ray ray, vec3 invDir, uint dirIsNeg[3], vec3 cornerMin, vec3 cornerMax);
 HitInfo Hit_BVH(Ray ray);
 // ---------------- Uniforms ----------------
+uniform uint seed;
+uniform uint samples;
+uniform uint depth;
 uniform Camera camera;
 layout(rgba32f, binding = 0) uniform image2D film;
 layout(binding = 1) uniform sampler2D environmentMap;
@@ -80,21 +83,12 @@ void main(){
     globalIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * viewPortDims.x;
     prngState = pcg_hash(globalIndex);
     // ----------- Main --------------------
+    vec3 irradiance = vec3(0.0);
+    for (uint _sample = 1; _sample <= samples; _sample++) irradiance += Sample();
+    irradiance /= float(samples);
 
-	Ray ray = GenCamRay();
-    vec3 color;
-
-    HitInfo hitInfo = Hit_BVH(ray);
-
-    if (hitInfo.didHit) color = SampleEnvMap(reflect(ray.d, hitInfo.n));
-    else color = SampleEnvMap(ray.d).rgb;
-
-    color = vec3(rand(prngState));
-
-
-	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
+	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(irradiance, 1.0));
 }
-
 // ---------------- Function Definitions ----------------
 Ray GenCamRay(){
 	vec2 ndcCoord = ((vec2(gl_GlobalInvocationID) + 0.5) / viewPortDims * 2.0) - 1.0;
@@ -114,6 +108,26 @@ Ray GenCamRay(){
     vec3 rayDirection = normalize(worldCoord.xyz);
     return Ray(rayOrigin, rayDirection);
 }
+vec3 Sample(){
+    vec3 irradiance = vec3(1.0);
+
+    Ray ray = GenCamRay();
+    HitInfo hitInfo;
+
+    for (uint i = 1; i <= depth; i++){
+        hitInfo = Hit_BVH(ray);
+
+        if (hitInfo.didHit){
+            irradiance *= 0.5;
+            ray = Ray(hitInfo.p + hitInfo.n + 0.001, reflect(ray.d, hitInfo.n));
+        }
+        else{
+            irradiance *= SampleEnvMap(ray.d);
+            break;
+        }
+    }
+    return irradiance;
+}
 vec3 At(Ray ray, float t){
     return ray.o + ray.d * t;
 }
@@ -128,6 +142,8 @@ vec3 SampleEnvMap(vec3 dir)
 	return textureLod(environmentMap, uv, 0.0).rgb;
 };
 HitInfo Hit_Triangle(Ray ray, Triangle triangle){
+    const float EPSILON = 0.0000001;
+
     Vertex v0 = vertices[triangle.i0];
     Vertex v1 = vertices[triangle.i1];
     Vertex v2 = vertices[triangle.i2];

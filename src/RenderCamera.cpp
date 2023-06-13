@@ -5,7 +5,18 @@ using namespace Atrium;
 void RenderCamera::Init() {
 	integrator = ShaderProgram("src/Shaders/Integrator.comp");
 }
-void RenderCamera::Render(const Film& film, const Camera& camera, const AStructure& aStructure, const Texture& environmentMap) {
+void RenderCamera::Render(
+	const Film& film,
+	const Camera& camera,
+	const AStructure& aStructure,
+	const Texture& environmentMap,
+	unsigned int samples,
+	unsigned int depth,
+	unsigned int seed) {
+
+	integrator.SetUint("seed", seed);
+	integrator.SetUint("samples", samples);
+	integrator.SetUint("depth", depth);
 	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global).GetMatrix());
 	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
 
