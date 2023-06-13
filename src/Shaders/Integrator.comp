@@ -1,5 +1,7 @@
 #version 460 core
 
+#include "PRNG.glsl"
+
 // ---------------- Structures ----------------
 struct Camera{
 	mat4 modelMatrix;
@@ -43,7 +45,6 @@ const float EPSILON = 0.0000001;
 Ray GenCamRay();
 vec3 At(Ray ray, float t);
 vec3 SampleEnvMap(vec3 dir);
-highp float Rand(vec2 co);
 HitInfo Hit_Triangle(Ray ray, Triangle triangle);
 HitInfo Hit_AABB(Ray ray, vec3 invDir, uint dirIsNeg[3], vec3 cornerMin, vec3 cornerMax);
 HitInfo Hit_BVH(Ray ray);
@@ -68,8 +69,18 @@ layout(local_size_x = 8, local_size_y = 4) in;
 
 // -------------- Shared --------------------
 shared uint stack[gl_WorkGroupSize.x * gl_WorkGroupSize.y][30];
+// -------------- Globals --------------------
+uvec2 viewPortDims;
+uint globalIndex;
+uint prngState;
 
 void main(){
+    // ----------- Init Globals -------------
+    viewPortDims = uvec2(gl_NumWorkGroups.x * gl_WorkGroupSize.x, gl_NumWorkGroups.y * gl_WorkGroupSize.y);
+    globalIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * viewPortDims.x;
+    prngState = pcg_hash(globalIndex);
+    // ----------- Main --------------------
+
 	Ray ray = GenCamRay();
     vec3 color;
 
@@ -78,13 +89,15 @@ void main(){
     if (hitInfo.didHit) color = SampleEnvMap(reflect(ray.d, hitInfo.n));
     else color = SampleEnvMap(ray.d).rgb;
 
-    color = vec3(Rand(vec2(gl_GlobalInvocationID)));
+    color = vec3(rand(prngState));
+
+
 	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
 }
 
 // ---------------- Function Definitions ----------------
 Ray GenCamRay(){
-	vec2 ndcCoord = ((vec2(gl_GlobalInvocationID) + 0.5) / imageSize(film) * 2.0) - 1.0;
+	vec2 ndcCoord = ((vec2(gl_GlobalInvocationID) + 0.5) / viewPortDims * 2.0) - 1.0;
 
 	// Convert the NDC coordinate to clip space coordinates
     vec4 clipCoord = vec4(ndcCoord, -1.0, 1.0);
@@ -200,13 +213,4 @@ HitInfo Hit_BVH(Ray ray){
         }
     }
     return closestHit;
-}
-highp float Rand(vec2 co)
-{
-    highp float a = 12.9898;
-    highp float b = 78.233;
-    highp float c = 43758.5453;
-    highp float dt= dot(co.xy ,vec2(a,b));
-    highp float sn= mod(dt,3.14);
-    return fract(sin(sn) * c);
 }

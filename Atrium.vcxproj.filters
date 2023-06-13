@@ -166,5 +166,6 @@
     <None Include="src\Shaders\Integrator.comp" />
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />
+    <None Include="src\Shaders\PRNG.glsl" />
   </ItemGroup>
 </Project>
