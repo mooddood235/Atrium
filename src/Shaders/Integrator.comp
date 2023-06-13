@@ -43,6 +43,7 @@ const float EPSILON = 0.0000001;
 Ray GenCamRay();
 vec3 At(Ray ray, float t);
 vec3 SampleEnvMap(vec3 dir);
+highp float Rand(vec2 co);
 HitInfo Hit_Triangle(Ray ray, Triangle triangle);
 HitInfo Hit_AABB(Ray ray, vec3 invDir, uint dirIsNeg[3], vec3 cornerMin, vec3 cornerMax);
 HitInfo Hit_BVH(Ray ray);
@@ -77,6 +78,7 @@ void main(){
     if (hitInfo.didHit) color = SampleEnvMap(reflect(ray.d, hitInfo.n));
     else color = SampleEnvMap(ray.d).rgb;
 
+    color = vec3(Rand(vec2(gl_GlobalInvocationID)));
 	imageStore(film, ivec2(gl_GlobalInvocationID), vec4(color, 1.0));
 }
 
@@ -198,4 +200,13 @@ HitInfo Hit_BVH(Ray ray){
         }
     }
     return closestHit;
+}
+highp float Rand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
 }
