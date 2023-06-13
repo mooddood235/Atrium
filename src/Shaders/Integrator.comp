@@ -39,6 +39,7 @@ struct BVHNode {
 };
 // ---------------- Constants ----------------------------
 HitInfo NoHit = HitInfo(false, 1./0., vec3(0), vec3(0));
+const float EPSILON = 0.0000001;
 
 // ---------------- Function Declarations ----------------
 Ray GenCamRay();
@@ -119,7 +120,7 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             irradiance *= 0.5;
-            ray = Ray(hitInfo.p + hitInfo.n + 0.001, reflect(ray.d, hitInfo.n));
+            ray = Ray(hitInfo.p + hitInfo.n + EPSILON, reflect(ray.d, hitInfo.n));
         }
         else{
             irradiance *= SampleEnvMap(ray.d);
@@ -142,8 +143,6 @@ vec3 SampleEnvMap(vec3 dir)
 	return textureLod(environmentMap, uv, 0.0).rgb;
 };
 HitInfo Hit_Triangle(Ray ray, Triangle triangle){
-    const float EPSILON = 0.0000001;
-
     Vertex v0 = vertices[triangle.i0];
     Vertex v1 = vertices[triangle.i1];
     Vertex v2 = vertices[triangle.i2];
