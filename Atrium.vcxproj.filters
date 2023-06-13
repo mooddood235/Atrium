@@ -167,5 +167,7 @@
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />
     <None Include="src\Shaders\PRNG.glsl" />
+    <None Include="src\Shaders\Samplers.glsl" />
+    <None Include="src\Shaders\Math.glsl" />
   </ItemGroup>
 </Project>

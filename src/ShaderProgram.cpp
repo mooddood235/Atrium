@@ -8,6 +8,8 @@
 
 using namespace Atrium;
 
+#include <set>
+
 ShaderProgram::ShaderProgram() {
 	shaderProgramID = -1;
 }
@@ -37,8 +39,9 @@ unsigned int ShaderProgram::CompileShader(string shaderPath, GLenum type) {
 	string pathToIncludes = shaderPath.substr(0, shaderPath.find_last_of('/'));
 
 	char error[256] = {'\0'};
+	std::set<string> ignore;
 	char* shaderString = stb_include_file(
-		const_cast<char*>(shaderPath.c_str()), nullptr, const_cast<char*>(pathToIncludes.c_str()), error);
+		const_cast<char*>(shaderPath.c_str()), nullptr, const_cast<char*>(pathToIncludes.c_str()), ignore, error);
 
 	if (!shaderString) {
 		cout << error << endl;

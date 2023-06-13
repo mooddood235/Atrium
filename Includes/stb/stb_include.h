@@ -34,18 +34,22 @@
 // Fixes:
 //  Michal Klos
 
+#pragma once
+#include <set>
+#include <string>
+
 #ifndef STB_INCLUDE_STB_INCLUDE_H
 #define STB_INCLUDE_STB_INCLUDE_H
 
 // Do include-processing on the string 'str'. To free the return value, pass it to free()
-char* stb_include_string(char* str, char* inject, char* path_to_includes, char* filename_for_line_directive, char error[256]);
+char* stb_include_string(char* str, char* inject, char* path_to_includes, char* filename_for_line_directive, std::set<std::string>& ignore, char error[256]);
 
 // Concatenate the strings 'strs' and do include-processing on the result. To free the return value, pass it to free()
-char* stb_include_strings(char** strs, int count, char* inject, char* path_to_includes, char* filename_for_line_directive, char error[256]);
+char* stb_include_strings(char** strs, int count, char* inject, char* path_to_includes, char* filename_for_line_directive, std::set<std::string>& ignore, char error[256]);
 
 // Load the file 'filename' and do include-processing on the string therein. note that
 // 'filename' is opened directly; 'path_to_includes' is not used. To free the return value, pass it to free()
-char* stb_include_file(char* filename, char* inject, char* path_to_includes, char error[256]);
+char* stb_include_file(char* filename, char* inject, char* path_to_includes, std::set<std::string>& ignore, char error[256]);
 
 #endif
 
@@ -182,7 +186,7 @@ static char* stb_include_append(char* str, size_t* curlen, char* addstr, size_t 
     return str;
 }
 
-char* stb_include_string(char* str, char* inject, char* path_to_includes, char* filename, char error[256])
+char* stb_include_string(char* str, char* inject, char* path_to_includes, char* filename, std::set<std::string>& ignore, char error[256])
 {
     char temp[4096];
     include_info* inc_list;
@@ -215,16 +219,22 @@ char* stb_include_string(char* str, char* inject, char* path_to_includes, char* 
             text = stb_include_append(text, &textlen, temp, strlen(temp));
         }
 #endif
+        
         if (inc_list[i].filename == 0) {
             if (inject != 0)
                 text = stb_include_append(text, &textlen, inject, strlen(inject));
         }
+        else if (ignore.contains(inc_list[i].filename)) {
+
+        }
         else {
+            ignore.insert(inc_list[i].filename);
+
             char* inc;
             strcpy(temp, path_to_includes);
             strcat(temp, "/");
             strcat(temp, inc_list[i].filename);
-            inc = stb_include_file(temp, inject, path_to_includes, error);
+            inc = stb_include_file(temp, inject, path_to_includes, ignore, error);
             if (inc == NULL) {
                 stb_include_free_includes(inc_list, num);
                 return NULL;
@@ -252,7 +262,7 @@ char* stb_include_string(char* str, char* inject, char* path_to_includes, char* 
     return text;
 }
 
-char* stb_include_strings(char** strs, int count, char* inject, char* path_to_includes, char* filename, char error[256])
+char* stb_include_strings(char** strs, int count, char* inject, char* path_to_includes, char* filename, std::set<std::string>& ignore, char error[256])
 {
     char* text;
     char* result;
@@ -266,12 +276,12 @@ char* stb_include_strings(char** strs, int count, char* inject, char* path_to_in
         strcpy(text + length, strs[i]);
         length += strlen(strs[i]);
     }
-    result = stb_include_string(text, inject, path_to_includes, filename, error);
+    result = stb_include_string(text, inject, path_to_includes, filename, ignore, error);
     free(text);
     return result;
 }
 
-char* stb_include_file(char* filename, char* inject, char* path_to_includes, char error[256])
+char* stb_include_file(char* filename, char* inject, char* path_to_includes, std::set<std::string>& ignore, char error[256])
 {
     size_t len;
     char* result;
@@ -282,7 +292,7 @@ char* stb_include_file(char* filename, char* inject, char* path_to_includes, cha
         strcat(error, "'");
         return 0;
     }
-    result = stb_include_string(text, inject, path_to_includes, filename, error);
+    result = stb_include_string(text, inject, path_to_includes, filename, ignore, error);
     free(text);
     return result;
 }

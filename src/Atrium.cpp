@@ -27,7 +27,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Statue.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Dragon.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);
@@ -52,7 +52,7 @@ int main()
         lastTime = currentTime;
         
         camera->TransformFromInput(window, deltaTime);
-        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, 10, 10000, 2023);
+        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, 1, 10, 2023);
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());
