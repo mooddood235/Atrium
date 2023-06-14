@@ -31,7 +31,9 @@ void Atrium::Camera::LoadProjectionMatrix(const tinygltf::Node& gltfNode, const 
 glm::mat4 Camera::GetProjectionMatrix() const{
 	return projectionMatrix;
 }
-void Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
+bool Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
+	glm::mat4 modelMatrix = GetTransform(Space::Global).GetMatrix();
+
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(0, 0, -1) * moveSpeed * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(0, 0, 1) * moveSpeed * deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) Translate(GetTransform(Space::Global).rotationMatrix * glm::vec3(-1, 0, 0) * moveSpeed * deltaTime);
@@ -55,4 +57,6 @@ void Camera::TransformFromInput(GLFWwindow* window, float deltaTime){
 	lastX = mouseX;
 	lastY = mouseY;
 
+
+	return modelMatrix == GetTransform(Space::Global).GetMatrix() ? false : true;
 }

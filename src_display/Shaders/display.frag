@@ -1,6 +1,7 @@
 #version 460 core
 
 uniform sampler2D film;
+uniform uint samplesTaken;
 
 in vec2 fragCoord;
 out vec4 fragColor;
@@ -17,6 +18,6 @@ vec3 ACESFilm(vec3 x)
 
 void main(){
 	vec2 uv = (fragCoord + 1.0) / 2.0;
-    vec3 color = textureLod(film, uv, 0.0).rgb;
+    vec3 color = textureLod(film, uv, 0.0).rgb / float(samplesTaken);
 	fragColor = vec4(color / (color + 0.2), 0.0);
 }

@@ -34,14 +34,16 @@ int main()
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::Texture environmentMap("EnvironmentMaps/blue_photo_studio_4k.hdr");
+    Atrium::Texture environmentMap("EnvironmentMaps/rainforest_trail_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
     Atrium::ShaderProgram displayShader("src_display/Shaders/display.vert", "src_display/Shaders/display.frag");
 
-    // Time Objects
+    // Objects
     float lastTime = 0.0f;
+    unsigned int samplesTaken = 0;
+    const unsigned int samplesPerTick = 1;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -51,11 +53,18 @@ int main()
         float deltaTime = currentTime - lastTime;
         lastTime = currentTime;
         
-        camera->TransformFromInput(window, deltaTime);
-        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, 1, 10, 2023);
+        Atrium::RenderMode renderMode = Atrium::RenderMode::Append;
+        if (camera->TransformFromInput(window, deltaTime)) {
+            samplesTaken = 0;
+            renderMode = Atrium::RenderMode::Write;
+        }
+        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, samplesPerTick, 10, samplesTaken, renderMode);
+
+        samplesTaken += samplesPerTick;
 
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());
+        displayShader.SetUint("samplesTaken", samplesTaken);
         displayShader.Use();
         quad.Draw();
         displayShader.UnUse();

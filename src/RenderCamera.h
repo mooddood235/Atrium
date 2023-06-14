@@ -8,6 +8,11 @@
 #include "Texture.h"
 
 namespace Atrium {
+	enum class RenderMode {
+		Write = 0,
+		Append = 1
+	};
+
 	class RenderCamera {
 	public:
 		static void Init();
@@ -18,7 +23,8 @@ namespace Atrium {
 			const Texture& environmentMap,
 			unsigned int samples,
 			unsigned int depth,
-			unsigned int seed);
+			unsigned int seed,
+			RenderMode renderMode);
 	private:
 		static ShaderProgram integrator;
 	};

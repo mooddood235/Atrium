@@ -12,11 +12,13 @@ void RenderCamera::Render(
 	const Texture& environmentMap,
 	unsigned int samples,
 	unsigned int depth,
-	unsigned int seed) {
+	unsigned int seed,
+	RenderMode renderMode) {
 
 	integrator.SetUint("seed", seed);
 	integrator.SetUint("samples", samples);
 	integrator.SetUint("depth", depth);
+	integrator.SetUint("renderMode", (unsigned int)renderMode);
 	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global).GetMatrix());
 	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
 
