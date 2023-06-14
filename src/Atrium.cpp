@@ -27,7 +27,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Dragon.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Statue.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);
@@ -44,6 +44,7 @@ int main()
     float lastTime = 0.0f;
     unsigned int samplesTaken = 0;
     const unsigned int samplesPerTick = 1;
+    const unsigned int depth = 10;
 
     // Render loop
     while (!glfwWindowShouldClose(window)) {
@@ -58,7 +59,8 @@ int main()
             samplesTaken = 0;
             renderMode = Atrium::RenderMode::Write;
         }
-        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, samplesPerTick, 10, samplesTaken, renderMode);
+        
+        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
 
         samplesTaken += samplesPerTick;
 

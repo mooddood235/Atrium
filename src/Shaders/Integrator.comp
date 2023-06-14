@@ -121,10 +121,8 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             vec3 newD = normalize(GetTangentSpace(hitInfo.n) * SampleHemisphere(rand(prngState), rand(prngState)));
-            ray = Ray(hitInfo.p + hitInfo.n + 0.0001, newD);
+            ray = Ray(hitInfo.p + hitInfo.n * 0.0001, newD);
             irradiance *= 0.5 / PI / SampleHemispherePDF() * sdot(newD, hitInfo.n);
-            //irradiance = max(vec3(0.0), hitInfo.n);
-            //break;
         }
         else{
             irradiance *= SampleEnvMap(ray.d);
