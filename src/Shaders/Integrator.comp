@@ -116,13 +116,17 @@ vec3 Sample(){
     Ray ray = GenCamRay();
     HitInfo hitInfo;
 
-    for (uint i = 1; i <= depth; i++){
+    for (uint i = 1; i <= depth + 1; i++){
+        if (i == depth + 1){
+            irradiance = vec3(0.0);
+            break;
+        }
         hitInfo = Hit_BVH(ray);
 
         if (hitInfo.didHit){
             vec3 newD = normalize(GetTangentSpace(hitInfo.n) * SampleHemisphere(rand(prngState), rand(prngState)));
             ray = Ray(hitInfo.p + hitInfo.n * 0.0001, newD);
-            irradiance *= 0.5 / PI / SampleHemispherePDF() * sdot(newD, hitInfo.n);
+            irradiance *= 0.8 / PI / SampleHemispherePDF() * sdot(newD, hitInfo.n);
         }
         else{
             irradiance *= SampleEnvMap(ray.d);
