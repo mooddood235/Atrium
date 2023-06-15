@@ -27,7 +27,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Statue.gltf");
+    Atrium::Scene cubeScene = Atrium::Scene("Models/Dragon.gltf");
     std::cout << cubeScene.ToString() << std::endl;
 
     Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);

@@ -14,12 +14,12 @@ BVH::BVH(const Scene& scene, SplitMethod splitMethod) {
 	numNodes = 0;
 
 	LoadMeshes(scene);
-	orderedTriangles = std::vector<BVHTriangle>(); orderedTriangles.reserve(triangles.size());
+	orderedBVHTriangles = std::vector<BVHTriangle>(); orderedBVHTriangles.reserve(bvhTriangles.size());
 
-	root = BuildRecursive(std::span<BVHTriangle>(triangles));
+	root = BuildRecursive(std::span<BVHTriangle>(bvhTriangles));
 
-	triangles.swap(orderedTriangles);
-	orderedTriangles.resize(0);
+	bvhTriangles.swap(orderedBVHTriangles);
+	orderedBVHTriangles.resize(0);
 
 	flatRepresentation = new FlatBVHNode[numNodes];
 	int offset = 0;
@@ -53,8 +53,8 @@ BVHNode* BVH::BuildRecursive(std::span<BVHTriangle> triangles) {
 	return new BVHNode(aabb, left, right, dim, 0, 0);
 }
 BVHNode* BVH::CreateLeaf(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim) {
-	orderedTriangles.insert(orderedTriangles.end(), triangles.begin(), triangles.end());
-	return new BVHNode(aabb, nullptr, nullptr, dim, orderedTriangles.size() - triangles.size(), triangles.size());
+	orderedBVHTriangles.insert(orderedBVHTriangles.end(), triangles.begin(), triangles.end());
+	return new BVHNode(aabb, nullptr, nullptr, dim, orderedBVHTriangles.size() - triangles.size(), triangles.size());
 }
 int BVH::SplitEqualCounts(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim) {
 	unsigned int mid = triangles.size() / 2;
@@ -122,15 +122,6 @@ int BVH::SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB
 
 void BVH::GenerateSSBOs() {
 	#pragma pack(push, 1)
-	struct GPUTriangle {
-		unsigned int i0, i1, i2;
-		float pad0;
-		GPUTriangle() {}
-		GPUTriangle(const BVHTriangle& bvhTriangle) {
-			Triangle triangle = bvhTriangle.triangle;
-			i0 = triangle.index0; i1 = triangle.index1; i2 = triangle.index2;
-		}
-	};
 	struct GPUBVHNode {
 		glm::vec3 min;
 		float pad0;
@@ -153,32 +144,19 @@ void BVH::GenerateSSBOs() {
 	};
 	#pragma pack(pop)
 
-	GPUVertex* GPUVertices = new GPUVertex[vertices.size()];
-	for (unsigned int i = 0; i < vertices.size(); i++) GPUVertices[i] = GPUVertex(vertices[i]);
-
-	GPUTriangle* GPUTriangles = new GPUTriangle[triangles.size()];
-	for (unsigned int i = 0; i < triangles.size(); i++) GPUTriangles[i] = GPUTriangle(triangles[i]);
+	std::vector<Triangle> triangles = std::vector<Triangle>();
+	triangles.reserve(bvhTriangles.size());
+	for (const BVHTriangle& bvhTriangle : bvhTriangles) triangles.push_back(bvhTriangle.triangle);
+	AStructure::GenerateSSBOs(triangles);
 
 	GPUBVHNode* GPUBVHNodes = new GPUBVHNode[numNodes];
 	for (unsigned int i = 0; i < numNodes; i++) GPUBVHNodes[i] = GPUBVHNode(flatRepresentation[i]);
 
-	glGenBuffers(1, &verticesSSBO);
-	glGenBuffers(1, &trianglesSSBO);
 	glGenBuffers(1, &nodesSSBO);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * triangles.size(), GPUTriangles, GL_STATIC_DRAW);
-
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, nodesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUBVHNode) * numNodes, GPUBVHNodes, GL_STATIC_DRAW);
-
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
-	delete[] GPUVertices;
-	delete[] GPUTriangles;
 	delete[] GPUBVHNodes;
 }
 int BVH::Flatten(const BVHNode* bvhNode, int* offset){
@@ -205,7 +183,7 @@ void BVH::Bind() const{
 void BVH::LoadMeshes(const Scene& scene) {
 	std::vector<Triangle> noAABBTriangles;
 	AStructure::LoadMeshes(scene, vertices, noAABBTriangles);
-	triangles = std::vector<BVHTriangle>(); triangles.reserve(noAABBTriangles.size());
+	bvhTriangles = std::vector<BVHTriangle>(); bvhTriangles.reserve(noAABBTriangles.size());
 
 	for (const Triangle& triangle : noAABBTriangles) {
 		Vertex v0 = vertices[triangle.index0];
@@ -217,7 +195,7 @@ void BVH::LoadMeshes(const Scene& scene) {
 
 		AABB aabb = AABB(min, max);
 
-		triangles.push_back(BVHTriangle(triangle, aabb));
+		bvhTriangles.push_back(BVHTriangle(triangle, aabb));
 	}
 }
 unsigned int BVH::GetDepth() const {

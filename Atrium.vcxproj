@@ -153,6 +153,7 @@
     <ClCompile Include="src\AABB.cpp" />
     <ClCompile Include="src\BVHNode.cpp" />
     <ClCompile Include="src\BVH.cpp" />
+    <ClCompile Include="src\Material.cpp" />
     <ClCompile Include="src_display\Quad.cpp" />
     <ClCompile Include="src\Film.cpp" />
     <ClCompile Include="src\Buffer.cpp" />
@@ -181,6 +182,7 @@
     <ClInclude Include="src\AABB.h" />
     <ClInclude Include="src\BVHNode.h" />
     <ClInclude Include="src\BVH.h" />
+    <ClInclude Include="src\Material.h" />
     <ClInclude Include="src_display\Quad.h" />
     <ClInclude Include="src\Film.h" />
     <ClInclude Include="src\Buffer.h" />

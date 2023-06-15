@@ -8,6 +8,8 @@ void AStructure::LoadMeshes(const Scene& scene, std::vector<Vertex>& vertices, s
 			LoadMeshesHelper((const Mesh*)node, vertices, triangles);
 }
 
+
+
 void AStructure::LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles){
 	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
 		Triangle triangle(mesh->indices[i], mesh->indices[i + 1], mesh->indices[i + 2]);
@@ -25,8 +27,46 @@ void AStructure::LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertice
 		if (node->GetType() == NodeType::Mesh) 
 			LoadMeshesHelper((const Mesh*)node, vertices, triangles);
 }
-GPUVertex::GPUVertex() {}
-GPUVertex::GPUVertex(const Vertex& vertex){
-	p = vertex.position;
-	n = vertex.normal;
+void AStructure::GenerateSSBOs(const std::vector<Triangle>& triangles){
+	#pragma pack(push, 1)
+	struct GPUVertex {
+		glm::vec3 p;
+		float pad0;
+		glm::vec3 n;
+		float pad1;
+		GPUVertex() {}
+		GPUVertex(const Vertex& vertex) {
+			p = vertex.position;
+			n = vertex.normal;
+		}
+	};
+	struct GPUTriangle {
+		unsigned int i0, i1, i2;
+		float pad0;
+		GPUTriangle() {}
+		GPUTriangle(const Triangle& triangle) {
+			i0 = triangle.index0; i1 = triangle.index1; i2 = triangle.index2;
+		}
+	};
+	#pragma pack(pop)
+
+	GPUVertex* GPUVertices = new GPUVertex[vertices.size()];
+	for (unsigned int i = 0; i < vertices.size(); i++) GPUVertices[i] = GPUVertex(vertices[i]);
+
+	GPUTriangle* GPUTriangles = new GPUTriangle[triangles.size()];
+	for (unsigned int i = 0; i < triangles.size(); i++) GPUTriangles[i] = GPUTriangle(triangles[i]);
+
+	glGenBuffers(1, &verticesSSBO);
+	glGenBuffers(1, &trianglesSSBO);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * triangles.size(), GPUTriangles, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+
+	delete[] GPUVertices;
+	delete[] GPUTriangles;
 }

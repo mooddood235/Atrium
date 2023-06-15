@@ -40,12 +40,9 @@ namespace Atrium {
 		unsigned int numNodes;
 
 		SplitMethod splitMethod;
-		std::vector<BVHTriangle> triangles;
-		std::vector<Vertex> vertices;
-		std::vector<BVHTriangle> orderedTriangles;
+		std::vector<BVHTriangle> bvhTriangles;
+		std::vector<BVHTriangle> orderedBVHTriangles;
 
-		unsigned int verticesSSBO;
-		unsigned int trianglesSSBO;
 		unsigned int nodesSSBO;
 	};
 }

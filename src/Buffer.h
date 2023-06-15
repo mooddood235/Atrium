@@ -14,11 +14,7 @@ namespace Atrium {
 		Buffer(const Scene& scene);
 		void Bind() const override;
 	private:
-		void GenerateSSBOs();
-	private:
-		std::vector<Vertex> vertices;
 		std::vector<Triangle> triangles;
-		unsigned int verticesSSBO, trianglesSSBO;
 	};
 }
 

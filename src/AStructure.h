@@ -7,24 +7,17 @@
 #include "Mesh.h"
 
 namespace Atrium {
-	#pragma pack(push, 1)
-	struct GPUVertex {
-		glm::vec3 p;
-		float pad0;
-		glm::vec3 n;
-		float pad1;
-		GPUVertex();
-		GPUVertex(const Vertex& vertex);
-	};
-	#pragma pack(pop)
-
 	struct AStructure{
 	public:
 		virtual void Bind() const = 0;
 	protected:
 		void LoadMeshes(const Scene& scene, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles);
+		void GenerateSSBOs(const std::vector<Triangle>& triangles);
 	private:
 		void LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles);
+	protected:
+		std::vector<Vertex> vertices;
+		unsigned int verticesSSBO, trianglesSSBO;
 	};
 }
 
