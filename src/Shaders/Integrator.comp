@@ -93,7 +93,8 @@ void main(){
 }
 // ---------------- Function Definitions ----------------
 Ray GenCamRay(){
-	vec2 ndcCoord = ((vec2(gl_GlobalInvocationID) + 0.5) / viewPortDims * 2.0) - 1.0;
+	//vec2 ndcCoord = ((vec2(gl_GlobalInvocationID) + 0.5) / viewPortDims * 2.0) - 1.0;
+    vec2 ndcCoord = (vec2(gl_GlobalInvocationID) + rand(prngState)) / viewPortDims * 2.0 - 1.0;
 
 	// Convert the NDC coordinate to clip space coordinates
     vec4 clipCoord = vec4(ndcCoord, -1.0, 1.0);

@@ -34,7 +34,7 @@ int main()
 
     Atrium::Camera* camera = cubeScene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::Texture environmentMap("EnvironmentMaps/blue_photo_studio_4k.hdr");
+    Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
