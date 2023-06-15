@@ -27,12 +27,12 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene cubeScene = Atrium::Scene("Models/Dragon.gltf");
-    std::cout << cubeScene.ToString() << std::endl;
+    Atrium::Scene scene = Atrium::Scene("Models/Dragon.gltf");
+    std::cout << scene.ToString() << std::endl;
 
-    Atrium::BVH bvh = Atrium::BVH(cubeScene, Atrium::SplitMethod::SAH);
+    Atrium::BVH bvh = Atrium::BVH(scene, Atrium::SplitMethod::SAH);
 
-    Atrium::Camera* camera = cubeScene.cameras[0];
+    Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
     Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
     

@@ -11,10 +11,10 @@ namespace Atrium {
 	public:
 		virtual void Bind() const = 0;
 	protected:
-		void LoadMeshes(const Scene& scene, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles);
+		void LoadMeshes(const Scene& scene, std::vector<Triangle>& triangles);
 		void GenerateSSBOs(const std::vector<Triangle>& triangles);
 	private:
-		void LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles);
+		void LoadMeshesHelper(const Mesh* mesh, std::vector<Triangle>& triangles);
 	protected:
 		std::vector<Vertex> vertices;
 		unsigned int verticesSSBO, trianglesSSBO;

@@ -2,15 +2,12 @@
 
 using namespace Atrium;
 
-void AStructure::LoadMeshes(const Scene& scene, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles){
+void AStructure::LoadMeshes(const Scene& scene, std::vector<Triangle>& triangles){
 	for (const Node* node : scene.hierarchy)
 		if (node->GetType() == NodeType::Mesh) 
-			LoadMeshesHelper((const Mesh*)node, vertices, triangles);
+			LoadMeshesHelper((const Mesh*)node, triangles);
 }
-
-
-
-void AStructure::LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertices, std::vector<Triangle>& triangles){
+void AStructure::LoadMeshesHelper(const Mesh* mesh, std::vector<Triangle>& triangles){
 	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
 		Triangle triangle(mesh->indices[i], mesh->indices[i + 1], mesh->indices[i + 2]);
 		triangles.push_back(triangle + vertices.size());
@@ -25,7 +22,7 @@ void AStructure::LoadMeshesHelper(const Mesh* mesh, std::vector<Vertex>& vertice
 	}
 	for (const Node* node : mesh->children)
 		if (node->GetType() == NodeType::Mesh) 
-			LoadMeshesHelper((const Mesh*)node, vertices, triangles);
+			LoadMeshesHelper((const Mesh*)node, triangles);
 }
 void AStructure::GenerateSSBOs(const std::vector<Triangle>& triangles){
 	#pragma pack(push, 1)

@@ -80,3 +80,13 @@ void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Mod
 		else  indices.push_back(*(unsigned int*)(data + stride * i));
 	}
 }
+void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Model& model){
+	const tinygltf::Material gltfMaterial = model.materials[primitive.material];
+	const tinygltf::PbrMetallicRoughness pbr = gltfMaterial.pbrMetallicRoughness;
+
+	material = Material(
+		glm::vec3(pbr.baseColorFactor[0], pbr.baseColorFactor[1], pbr.baseColorFactor[2]),
+		pbr.roughnessFactor,
+		pbr.metallicFactor
+	);
+}

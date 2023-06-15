@@ -182,7 +182,7 @@ void BVH::Bind() const{
 }
 void BVH::LoadMeshes(const Scene& scene) {
 	std::vector<Triangle> noAABBTriangles;
-	AStructure::LoadMeshes(scene, vertices, noAABBTriangles);
+	AStructure::LoadMeshes(scene, noAABBTriangles);
 	bvhTriangles = std::vector<BVHTriangle>(); bvhTriangles.reserve(noAABBTriangles.size());
 
 	for (const Triangle& triangle : noAABBTriangles) {

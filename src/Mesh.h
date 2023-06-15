@@ -5,6 +5,7 @@
 
 #include "Vertex.h"
 #include "Node.h"
+#include "Material.h"
 
 namespace Atrium {
 	class Mesh : public Node{
@@ -14,9 +15,11 @@ namespace Atrium {
 	private:
 		void LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
 		void LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
+		void LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
 	public:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;
+		Material material;
 	};
 }
 

@@ -7,7 +7,7 @@ Buffer::Buffer() {
 	vertices = std::vector<Vertex>();
 }
 Buffer::Buffer(const Scene& scene) {
-	LoadMeshes(scene, vertices, triangles);
+	LoadMeshes(scene, triangles);
 	GenerateSSBOs(triangles);
 }
 void Buffer::Bind() const{
