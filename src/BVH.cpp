@@ -138,10 +138,11 @@ void BVH::GenerateSSBOs() {
 	};
 	struct GPUTriangle {
 		unsigned int i0, i1, i2;
-		float pad0;
+		unsigned int matIndex;
 		GPUTriangle() {}
 		GPUTriangle(const BVHTriangle& bvhTriangle) {
 			i0 = bvhTriangle.triangle.index0; i1 = bvhTriangle.triangle.index1; i2 = bvhTriangle.triangle.index2;
+			matIndex = bvhTriangle.materialIndex;
 		}
 	};
 	struct GPUBVHNode {
@@ -164,6 +165,20 @@ void BVH::GenerateSSBOs() {
 			splitAxis = flatBVHNode.splitAxis;
 		}
 	};
+	struct GPUMaterial {
+		glm::vec3 albedo;
+		float pad0;
+		float roughness;
+		float metallic;
+		glm::vec2 pad1;
+
+		GPUMaterial() {}
+		GPUMaterial(const Material& material) {
+			albedo = material.albedoFactor;
+			roughness = material.roughnessFactor;
+			metallic = material.metallicFactor;
+		}
+	};
 	#pragma pack(pop)
 
 	GPUVertex* GPUVertices = new GPUVertex[vertices.size()];
@@ -175,9 +190,13 @@ void BVH::GenerateSSBOs() {
 	GPUBVHNode* GPUBVHNodes = new GPUBVHNode[numNodes];
 	for (unsigned int i = 0; i < numNodes; i++) GPUBVHNodes[i] = GPUBVHNode(flatRepresentation[i]);
 
+	GPUMaterial* GPUMaterials = new GPUMaterial[materials.size()];
+	for (unsigned int i = 0; i < materials.size(); i++) GPUMaterials[i] = GPUMaterial(materials[i]);
+
 	glGenBuffers(1, &verticesSSBO);
 	glGenBuffers(1, &trianglesSSBO);
 	glGenBuffers(1, &nodesSSBO);
+	glGenBuffers(1, &materialsSSBO);
 
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
@@ -188,11 +207,15 @@ void BVH::GenerateSSBOs() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, nodesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUBVHNode) * numNodes, GPUBVHNodes, GL_STATIC_DRAW);
 
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, materialsSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUMaterial) * materials.size(), GPUMaterials, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	delete[] GPUVertices;
 	delete[] GPUTriangles;
 	delete[] GPUBVHNodes;
+	delete[] GPUMaterials;
 }
 int BVH::Flatten(const BVHNode* bvhNode, int* offset){
 	FlatBVHNode* flatBVHNode = flatRepresentation + *offset;
@@ -214,6 +237,7 @@ void BVH::Bind() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, verticesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, trianglesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, nodesSSBO);
+	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, materialsSSBO);
 }
 void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
 	for (const Node* node : sceneHierarchy)
@@ -234,6 +258,7 @@ void BVH::LoadMeshesHelper(const Mesh* mesh) {
 		vertices.push_back(vertex);
 	}
 	bvhTriangles.reserve(bvhTriangles.size() + mesh->indices.size() / 3);
+	materials.push_back(mesh->material);
 	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
 		Triangle triangle = Triangle(mesh->indices[i], mesh->indices[i + 1], mesh->indices[i + 2]) + oldVerticesSize;
 
@@ -242,7 +267,7 @@ void BVH::LoadMeshesHelper(const Mesh* mesh) {
 		glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
 			glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
 
-		bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax)));
+		bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax), materials.size() - 1));
 	}
 	for (const Node* node : mesh->children)
 		if (node->GetType() == NodeType::Mesh)

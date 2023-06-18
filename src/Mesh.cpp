@@ -16,6 +16,7 @@ Mesh::Mesh(const tinygltf::Node& gltfNode, Transform parentTransform, const tiny
 	const tinygltf::Primitive primitive = model.meshes[gltfNode.mesh].primitives[0];
 	LoadAttributes(primitive, model);
 	LoadIndices(primitive, model);	
+	LoadMaterial(primitive, model);
 }
 void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
 	std::vector<glm::vec3> positions;

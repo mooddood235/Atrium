@@ -7,13 +7,13 @@
 #include "FlatBVHNode.h"
 #include "BVHTriangle.h"
 #include "Mesh.h"
+#include "Material.h"
 
 namespace Atrium {
 	enum class SplitMethod {
 		EqualCounts,
 		SAH
 	};
-
 	class BVH{
 	public:
 		BVH();
@@ -43,8 +43,9 @@ namespace Atrium {
 		std::vector<Vertex> vertices;
 		std::vector<BVHTriangle> bvhTriangles;
 		std::vector<BVHTriangle> orderedBVHTriangles;
+		std::vector<Material> materials;
 
-		unsigned int verticesSSBO, trianglesSSBO, nodesSSBO;
+		unsigned int verticesSSBO, trianglesSSBO, nodesSSBO, materialsSSBO;
 	};
 }
 
