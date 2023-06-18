@@ -7,12 +7,10 @@
 
 #include "Atrium.h"
 #include "Scene.h"
-#include "Buffer.h"
 #include "RenderCamera.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
 #include "Film.h"
-#include "BVH.h"
 
 int main()
 {
@@ -29,8 +27,6 @@ int main()
     // Objects
     Atrium::Scene scene = Atrium::Scene("Models/Dragon.gltf");
     std::cout << scene.ToString() << std::endl;
-
-    Atrium::BVH bvh = Atrium::BVH(scene, Atrium::SplitMethod::SAH);
 
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
@@ -60,7 +56,7 @@ int main()
             renderMode = Atrium::RenderMode::Write;
         }
         
-        Atrium::RenderCamera::Render(film, *camera, bvh, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
+        Atrium::RenderCamera::Render(film, *camera, scene, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
 
         samplesTaken += samplesPerTick;
 

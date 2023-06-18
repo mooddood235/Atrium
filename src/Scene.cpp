@@ -11,6 +11,7 @@ Scene::Scene(const std::string& scenePath) {
 	tinygltf::Model model;
 	LoadModel(model, scenePath);
 	CreateHierarchy(model);
+	bvh = BVH(hierarchy, SplitMethod::SAH);
 }
 std::string Scene::ToString() const{
 	std::string str;

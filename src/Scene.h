@@ -6,6 +6,7 @@
 #include "Node.h"
 #include "Camera.h"
 #include "Transform.h"
+#include "BVH.h"
 
 namespace Atrium {
 	class Scene{
@@ -19,6 +20,7 @@ namespace Atrium {
 	public:
 		std::vector<Node*> hierarchy;
 		std::vector<Camera*> cameras;
+		BVH bvh;
 	};
 }
 

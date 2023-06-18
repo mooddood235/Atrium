@@ -1,5 +1,6 @@
 #include "BVH.h"
 
+#include <glad/glad.h>
 #include <algorithm>
 #include <iostream>
 
@@ -9,11 +10,13 @@
 
 using namespace Atrium;
 
-BVH::BVH(const Scene& scene, SplitMethod splitMethod) {
+BVH::BVH() {}
+
+BVH::BVH(const std::vector<Node*> sceneHierarchy, SplitMethod splitMethod) {
 	this->splitMethod = splitMethod;
 	numNodes = 0;
 
-	LoadMeshes(scene);
+	LoadMeshes(sceneHierarchy);
 	orderedBVHTriangles = std::vector<BVHTriangle>(); orderedBVHTriangles.reserve(bvhTriangles.size());
 
 	root = BuildRecursive(std::span<BVHTriangle>(bvhTriangles));
@@ -122,6 +125,25 @@ int BVH::SplitSAH(std::span<BVHTriangle> triangles, const AABB& aabb, const AABB
 
 void BVH::GenerateSSBOs() {
 	#pragma pack(push, 1)
+	struct GPUVertex {
+		glm::vec3 p;
+		float pad0;
+		glm::vec3 n;
+		float pad1;
+		GPUVertex() {}
+		GPUVertex(const Vertex& vertex) {
+			p = vertex.position;
+			n = vertex.normal;
+		}
+	};
+	struct GPUTriangle {
+		unsigned int i0, i1, i2;
+		float pad0;
+		GPUTriangle() {}
+		GPUTriangle(const BVHTriangle& bvhTriangle) {
+			i0 = bvhTriangle.triangle.index0; i1 = bvhTriangle.triangle.index1; i2 = bvhTriangle.triangle.index2;
+		}
+	};
 	struct GPUBVHNode {
 		glm::vec3 min;
 		float pad0;
@@ -144,19 +166,32 @@ void BVH::GenerateSSBOs() {
 	};
 	#pragma pack(pop)
 
-	std::vector<Triangle> triangles = std::vector<Triangle>();
-	triangles.reserve(bvhTriangles.size());
-	for (const BVHTriangle& bvhTriangle : bvhTriangles) triangles.push_back(bvhTriangle.triangle);
-	AStructure::GenerateSSBOs(triangles);
+	GPUVertex* GPUVertices = new GPUVertex[vertices.size()];
+	for (unsigned int i = 0; i < vertices.size(); i++) GPUVertices[i] = GPUVertex(vertices[i]);
+
+	GPUTriangle* GPUTriangles = new GPUTriangle[bvhTriangles.size()];
+	for (unsigned int i = 0; i < bvhTriangles.size(); i++) GPUTriangles[i] = GPUTriangle(bvhTriangles[i]);
 
 	GPUBVHNode* GPUBVHNodes = new GPUBVHNode[numNodes];
 	for (unsigned int i = 0; i < numNodes; i++) GPUBVHNodes[i] = GPUBVHNode(flatRepresentation[i]);
 
+	glGenBuffers(1, &verticesSSBO);
+	glGenBuffers(1, &trianglesSSBO);
 	glGenBuffers(1, &nodesSSBO);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, verticesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUVertex) * vertices.size(), GPUVertices, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, trianglesSSBO);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUTriangle) * bvhTriangles.size(), GPUTriangles, GL_STATIC_DRAW);
+	
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, nodesSSBO);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(GPUBVHNode) * numNodes, GPUBVHNodes, GL_STATIC_DRAW);
+
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	delete[] GPUVertices;
+	delete[] GPUTriangles;
 	delete[] GPUBVHNodes;
 }
 int BVH::Flatten(const BVHNode* bvhNode, int* offset){
@@ -180,24 +215,40 @@ void BVH::Bind() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, trianglesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, nodesSSBO);
 }
-void BVH::LoadMeshes(const Scene& scene) {
-	std::vector<Triangle> noAABBTriangles;
-	AStructure::LoadMeshes(scene, noAABBTriangles);
-	bvhTriangles = std::vector<BVHTriangle>(); bvhTriangles.reserve(noAABBTriangles.size());
-
-	for (const Triangle& triangle : noAABBTriangles) {
-		Vertex v0 = vertices[triangle.index0];
-		Vertex v1 = vertices[triangle.index1];
-		Vertex v2 = vertices[triangle.index2];
-
-		glm::vec3 min = glm::min(v0.position, glm::min(v1.position, v2.position));
-		glm::vec3 max = glm::max(v0.position, glm::max(v1.position, v2.position));
-
-		AABB aabb = AABB(min, max);
-
-		bvhTriangles.push_back(BVHTriangle(triangle, aabb));
-	}
+void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
+	for (const Node* node : sceneHierarchy)
+		if (node->GetType() == NodeType::Mesh)
+			LoadMeshesHelper((const Mesh*)node);
 }
+void BVH::LoadMeshesHelper(const Mesh* mesh) {
+	unsigned int oldVerticesSize = vertices.size();
+	
+	glm::mat4 modelMatrix = mesh->GetTransform(Space::Global).GetMatrix();
+	glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
+
+	vertices.reserve(vertices.size() + mesh->vertices.size());
+
+	for (Vertex vertex : mesh->vertices) {
+		vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
+		vertex.normal = glm::normalize(normalMatrix * vertex.normal);
+		vertices.push_back(vertex);
+	}
+	bvhTriangles.reserve(bvhTriangles.size() + mesh->indices.size() / 3);
+	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
+		Triangle triangle = Triangle(mesh->indices[i], mesh->indices[i + 1], mesh->indices[i + 2]) + oldVerticesSize;
+
+		glm::vec3 aabbMin = glm::min(vertices[triangle.index0].position,
+			glm::min(vertices[triangle.index1].position, vertices[triangle.index2].position));
+		glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
+			glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
+
+		bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax)));
+	}
+	for (const Node* node : mesh->children)
+		if (node->GetType() == NodeType::Mesh)
+			LoadMeshesHelper((const Mesh*)node);
+}
+
 unsigned int BVH::GetDepth() const {
 	return GetDepthHelper(root);
 }

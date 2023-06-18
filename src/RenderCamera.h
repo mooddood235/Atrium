@@ -3,9 +3,9 @@
 #include <glm/glm.hpp>
 #include "Camera.h"
 #include "Film.h"
-#include "AStructure.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
+#include "Scene.h"
 
 namespace Atrium {
 	enum class RenderMode {
@@ -19,7 +19,7 @@ namespace Atrium {
 		static void Render(
 			const Film& film,
 			const Camera& camera,
-			const AStructure& aStructure,
+			const Scene& scene,
 			const Texture& environmentMap,
 			unsigned int samples,
 			unsigned int depth,

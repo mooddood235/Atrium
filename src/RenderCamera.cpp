@@ -8,7 +8,7 @@ void RenderCamera::Init() {
 void RenderCamera::Render(
 	const Film& film,
 	const Camera& camera,
-	const AStructure& aStructure,
+	const Scene& scene,
 	const Texture& environmentMap,
 	unsigned int samples,
 	unsigned int depth,
@@ -22,7 +22,7 @@ void RenderCamera::Render(
 	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global).GetMatrix());
 	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
 
-	aStructure.Bind();
+	scene.bvh.Bind();
 
 	glBindImageTexture(0, film.GetTextureID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
