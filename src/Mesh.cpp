@@ -91,4 +91,8 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		pbr.metallicFactor,
 		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2])
 	);
+	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
+	if (extension != gltfMaterial.extensions.end()) {
+		material.emissiveFactor *= extension->second.Get("emissiveStrength").GetNumberAsDouble();
+	}
 }
