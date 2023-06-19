@@ -25,12 +25,12 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene scene = Atrium::Scene("Models/ColorTest.gltf");
+    Atrium::Scene scene = Atrium::Scene("Models/CornellBox.gltf");
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::Texture environmentMap("EnvironmentMaps/alps_field_4k.hdr");
+    Atrium::Texture environmentMap("EnvironmentMaps/Black.png");
     
     // Display Objects
     Quad quad = Quad();

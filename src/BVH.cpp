@@ -168,13 +168,16 @@ void BVH::GenerateSSBOs() {
 	struct GPUMaterial {
 		glm::vec3 albedo;
 		float pad0;
+		glm::vec3 emission;
+		float pad1;
 		float roughness;
 		float metallic;
-		glm::vec2 pad1;
+		glm::vec2 pad2;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
 			albedo = material.albedoFactor;
+			emission = material.emissiveFactor;
 			roughness = material.roughnessFactor;
 			metallic = material.metallicFactor;
 		}

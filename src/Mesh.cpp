@@ -88,6 +88,7 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 	material = Material(
 		glm::vec3(pbr.baseColorFactor[0], pbr.baseColorFactor[1], pbr.baseColorFactor[2]),
 		pbr.roughnessFactor,
-		pbr.metallicFactor
+		pbr.metallicFactor,
+		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2])
 	);
 }
