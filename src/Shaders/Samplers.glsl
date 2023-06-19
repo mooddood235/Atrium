@@ -9,3 +9,13 @@ vec3 SampleHemisphere(float u0, float u1) {
 float SampleHemispherePDF(){
     return 1.0 / (2.0 * PI);
 }
+float Halton(uint base, uint index){
+	float result = 0.0;
+	float f = 1.0;
+	while (index > 0){
+		f = f / float(base);
+		result += f * float(index % base);
+		index = index / base; 
+	}
+	return result;
+}
