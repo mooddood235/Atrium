@@ -17,7 +17,7 @@ float Sqr(float x) { return x * x; }
 
 float CosTheta(vec3 w) { return w.z; }
 float Cos2Theta(vec3 w) { return w.z * w.z; }
-float AbsCosTheta(vec3 w) { return abs(w.z); }
+float SCosTheta(vec3 w) { return max(0.0, w.z); }
 float Sin2Theta(vec3 w) { return max(0.0, 1.0 - Cos2Theta(w)); }
 float SinTheta(vec3 w) { return sqrt(Sin2Theta(w)); }
 float TanTheta(vec3 w) { return SinTheta(w) / CosTheta(w); };

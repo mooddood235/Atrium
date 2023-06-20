@@ -4,13 +4,15 @@
 float G1(vec3 w, float a);
 
 float D(vec3 m, float a){
-	return Sqr(a) / (PI * Sqr(Sqr(CosTheta(m)) * (Sqr(a) - 1.0) + 1.0));
+	return Sqr(a) / (PI * Sqr(Sqr(SCosTheta(m)) * (Sqr(a) - 1.0) + 1.0));
 }
 float VNDF(vec3 w, vec3 m, float a){
-	return G1(w, a) / AbsCosTheta(w) * D(m, a) * sdot(w, m);
+	return G1(w, a) / SCosTheta(w) * D(m, a) * sdot(w, m);
 }
 float Lambda(vec3 w, float a){
-	return (sqrt(1.0 + Sqr(a) * Tan2Theta(w)) - 1.0) / 2.0;
+	float tan2Theta = Tan2Theta(w);
+	if (isinf(tan2Theta) || isnan(tan2Theta)) return 0.0;
+	return (sqrt(1.0 + Sqr(a) * tan2Theta) - 1.0) / 2.0;
 }
 float G1(vec3 w, float a){
 	return 1.0 / (1.0 + Lambda(w, a));
