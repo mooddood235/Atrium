@@ -1,4 +1,5 @@
 #include "Math.glsl"
+#include "Samplers.glsl"
 
 float G1(vec3 w, float a);
 
@@ -23,6 +24,19 @@ vec3 F(vec3 v, vec3 h, vec3 F0){
 vec3 Sample_m(vec3 w, float a, float u0, float u1){
 	vec3 wh = normalize(vec3(a * w.x, a * w.y, w.z));
 	if (wh.z < 0) wh = -wh;
+
+	vec3 T1 = (wh.z < 0.99999) ? normalize(cross(vec3(0.0, 0.0, 1.0), wh)) : vec3(1.0, 0.0, 0.0);
+	vec3 T2 = cross(wh, T1);
+
+	vec2 p = SampleDiskPolar(u0, u1);
+
+	float h = sqrt(1.0 - Sqr(p.x));
+	p.y = mix((1.0 + wh.z) / 2.0, h, p.y);
+
+	float pz = sqrt(max(0.0, 1.0 - Sqr(length(p))));
+	vec3 nh = p.x * T1 + p.y * T2 + pz * wh;
+	
+	return normalize(vec3(nh.x * a, nh.y * a, max(EPSILON, nh.z)));
 
 	return vec3(0);
 }
