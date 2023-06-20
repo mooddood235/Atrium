@@ -163,5 +163,6 @@
     <None Include="src\Shaders\PRNG.glsl" />
     <None Include="src\Shaders\Samplers.glsl" />
     <None Include="src\Shaders\Math.glsl" />
+    <None Include="src\Shaders\GGX.glsl" />
   </ItemGroup>
 </Project>

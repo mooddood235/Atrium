@@ -200,6 +200,7 @@
     <ClInclude Include="src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shaders\GGX.glsl" />
     <None Include="src\Shaders\Integrator.comp" />
     <None Include="src\Shaders\Math.glsl" />
     <None Include="src\Shaders\PRNG.glsl" />
