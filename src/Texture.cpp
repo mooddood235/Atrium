@@ -25,35 +25,21 @@ void Texture::LoadTexture(const std::string& path) {
 	glBindTexture(GL_TEXTURE_2D, textureID);
 
 	int width, height, numChannels;
+	unsigned char* data = stbi_load(pathCString, &width, &height, &numChannels, 0);
 
-	if (stbi_is_hdr(pathCString)) {
-		float* data = stbi_loadf(pathCString, &width, &height, &numChannels, 0);
-
-		if (!data) {
-			std::cout << "Texture at path '" << path << "' failed to load." << std::endl;
-			stbi_image_free(data);
-			exit(-1);
-		}
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB32F, width, height, 0, GL_RGB, GL_FLOAT, data);
+	if (!data) {
+		std::cout << "Texture at path '" << path << "' failed to load." << std::endl;
 		stbi_image_free(data);
+		exit(-1);
 	}
-	else {
-		unsigned char* data = stbi_load(pathCString, &width, &height, &numChannels, 0);
 
-		if (!data) {
-			std::cout << "Texture at path '" << path << "' failed to load." << std::endl;
-			stbi_image_free(data);
-			exit(-1);
-		}
+	GLenum internalFormat = GL_RED, format = GL_RED;
+	if (numChannels == 3) internalFormat = GL_RGB, format = GL_RGB;
+	else if (numChannels == 4) internalFormat = GL_RGBA, format = GL_RGBA;
 
-		GLenum internalFormat = GL_RED, format = GL_RED;
-		if (numChannels == 3) internalFormat = GL_RGB, format = GL_RGB;
-		else if (numChannels == 4) internalFormat = GL_RGBA, format = GL_RGBA;
-
-		glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
-		stbi_image_free(data);
-	}
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+	stbi_image_free(data);
+	
 	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

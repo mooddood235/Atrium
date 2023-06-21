@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "Film.h"
 #include "ShaderProgram.h"
-#include "Texture.h"
+#include "EnvironmentMap.h"
 #include "Scene.h"
 
 namespace Atrium {
@@ -20,7 +20,7 @@ namespace Atrium {
 			const Film& film,
 			const Camera& camera,
 			const Scene& scene,
-			const Texture& environmentMap,
+			const EnvironmentMap& environmentMap,
 			unsigned int samples,
 			unsigned int depth,
 			unsigned int seed,

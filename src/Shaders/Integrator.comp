@@ -95,7 +95,7 @@ uint prngState;
 
 void main(){
     // ----------- Init Globals -------------
-    viewPortDims = uvec2(gl_NumWorkGroups.x * gl_WorkGroupSize.x, gl_NumWorkGroups.y * gl_WorkGroupSize.y);
+    viewPortDims = uvec2(gl_NumWorkGroups * gl_WorkGroupSize);
     globalIndex = gl_GlobalInvocationID.x + gl_GlobalInvocationID.y * viewPortDims.x;
     prngState = pcg_hash(globalIndex + pcg_hash(seed));
     // ----------- Main --------------------

@@ -10,7 +10,7 @@ namespace Atrium {
 		unsigned int GetTextureID() const;
 	private:
 		void LoadTexture(const std::string& path);
-	private:
+	protected:
 		unsigned int textureID;
 		std::string path;
 	};

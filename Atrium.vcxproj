@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\EnvironmentMap.cpp" />
     <ClCompile Include="src\BVHSplitBucket.cpp" />
     <ClCompile Include="src\FlatBVHNode.cpp" />
     <ClCompile Include="src\BVHTriangle.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="src\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\EnvironmentMap.h" />
     <ClInclude Include="src\BVHSplitBucket.h" />
     <ClInclude Include="src\FlatBVHNode.h" />
     <ClInclude Include="src\BVHTriangle.h" />

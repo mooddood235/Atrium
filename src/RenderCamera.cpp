@@ -9,7 +9,7 @@ void RenderCamera::Render(
 	const Film& film,
 	const Camera& camera,
 	const Scene& scene,
-	const Texture& environmentMap,
+	const EnvironmentMap& environmentMap,
 	unsigned int samples,
 	unsigned int depth,
 	unsigned int seed,
@@ -27,7 +27,7 @@ void RenderCamera::Render(
 	glBindImageTexture(0, film.GetTextureID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, environmentMap.GetTextureID());
+	glBindTexture(GL_TEXTURE_2D, environmentMap.GetMapID());
 	
 	integrator.Use();
 	glDispatchCompute(film.GetResolution().x / 8, film.GetResolution().y / 4, 1);
