@@ -143,7 +143,6 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             Material mat = materials[hitInfo.matIndex];
-            //mat.roughness = 0.5;
             float a = max(0.001, mat.roughness);
 
             if (mat.emission != vec3(0.0)){
@@ -152,33 +151,32 @@ vec3 Sample(){
             }
             mat3 invTangentSpace = inverse(GetTangentSpace(hitInfo.n));
 
+            vec3 n = vec3(0.0, 0.0, 1.0);
             vec3 wo = normalize(invTangentSpace * -ray.d);
             vec3 wi;
             vec3 m;
-            vec3 f;
-            float p;
+            float pf;
+            float pg;
             float q;
-
             if (rand(prngState) <= specChance){
-                f = Sample_ggx(wo, a, mat, rand(prngState), rand(prngState), wi, m, p);
+                m = Sample_ggx_m(wo, a, rand(prngState), rand(prngState));
+                wi = reflect(-wo, m);
+                pf = p_ggx(wo, m, a);
+                pg = SampleHemispherePDF();
                 q = specChance;
-
-                if (CosTheta(wi) < 0){
-                    irradiance *= 0.0;
-                    break;
-                }
             }
             else{
                 wi = SampleHemisphere(rand(prngState), rand(prngState));
                 m = normalize(wo + wi);
-                f = f_lambert(wo, m, mat);
-                p = SampleHemispherePDF();
-                q = (1.0 - specChance);
+                pf = SampleHemispherePDF();
+                pg = p_ggx(wo, m, a);
+                q = 1.0 - specChance;
             }
-            float weight = 0.5;
-            irradiance *= (weight * f) / (q * p) * SCosTheta(wi);
-            wi = normalize(inverse(invTangentSpace) * wi);
+            float weight = BalanceHeuristic(1, pf, 1, pg);
+            vec3 f = f_lambert(wo, m, mat) + f_ggx(wo, wi, m, a, mat);
+            irradiance *= (weight / q) * (f / pf);
 
+            wi = normalize(inverse(invTangentSpace) * wi);
             ray = Ray(hitInfo.p + hitInfo.n * 0.0001, wi);
         }
         else{

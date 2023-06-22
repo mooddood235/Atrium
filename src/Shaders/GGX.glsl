@@ -43,14 +43,18 @@ vec3 Sample_ggx_m(vec3 w, float a, float u0, float u1){
 
 	return Ne;
 }
+
 vec3 f_ggx(vec3 wo, vec3 wi, vec3 m, float a, Material mat){
 	vec3 F0 = mix(vec3(0.04), mat.albedo, mat.metallic);
     vec3 F = F(wo, m, F0);
 	return D_ggx(m, a) * F * G_ggx(wo, wi, a) / max(EPSILON * 100.0, 4.0 * SCosTheta(wi) * SCosTheta(wo));
 }
+float p_ggx(vec3 wo, vec3 m, float a){
+	return max(EPSILON, VNDF_ggx(wo, m, a)) / (4.0 * sdot(wo, m));
+}
 vec3 Sample_ggx(vec3 wo, float a, Material mat, float u0, float u1, out vec3 wi, out vec3 m, out float pdf){
 	m = Sample_ggx_m(wo, a, u0, u1);
 	wi = reflect(-wo, m);
-	pdf = max(EPSILON, VNDF_ggx(wo, m, a)) / (4.0 * sdot(wo, m));
+	pdf = p_ggx(wo, m, a);
 	return f_ggx(wo, wi, m, a, mat);
 }
