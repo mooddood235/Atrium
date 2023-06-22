@@ -30,3 +30,6 @@ float SinPhi(vec3 w){
     float sinTheta = SinTheta(w);
     return sinTheta == 0.0 ? 0.0 : clamp(w.y / sinTheta, -1.0, 1.0);
 }
+vec3 F(vec3 v, vec3 h, vec3 F0){
+	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - sdot(v, h)), 5.0);
+}

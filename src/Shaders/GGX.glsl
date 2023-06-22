@@ -1,44 +1,27 @@
 #include "Math.glsl"
 #include "Samplers.glsl"
+#include "Material.glsl"
 
-float G1(vec3 w, float a);
+float G1_ggx(vec3 w, float a);
 
-float D(vec3 m, float a){
+float D_ggx(vec3 m, float a){
 	return Sqr(a) / (PI * Sqr(Sqr(SCosTheta(m)) * (Sqr(a) - 1.0) + 1.0));
 }
-float VNDF(vec3 w, vec3 m, float a){
-	return G1(w, a) / max(EPSILON, SCosTheta(w)) * D(m, a) * sdot(w, m);
+float VNDF_ggx(vec3 w, vec3 m, float a){
+	return G1_ggx(w, a) / max(EPSILON, SCosTheta(w)) * D_ggx(m, a) * sdot(w, m);
 }
 float Lambda(vec3 w, float a){
 	float tan2Theta = Tan2Theta(w);
 	if (isinf(tan2Theta) || isnan(tan2Theta)) return 0.0;
 	return (sqrt(1.0 + Sqr(a) * tan2Theta) - 1.0) / 2.0;
 }
-float G1(vec3 w, float a){
+float G1_ggx(vec3 w, float a){
 	return 1.0 / (1.0 + Lambda(w, a));
 }
-float G(vec3 wo, vec3 wi, float a){
+float G_ggx(vec3 wo, vec3 wi, float a){
 	return 1.0 / (1.0 + Lambda(wo, a) + Lambda(wi, a));
 }
-vec3 F(vec3 v, vec3 h, vec3 F0){
-	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - sdot(v, h)), 5.0);
-}
-vec3 Sample_m(vec3 w, float a, float u0, float u1){
-//	vec3 wh = normalize(vec3(a * w.x, a * w.y, w.z));
-//	if (wh.z < 0) wh = -wh;
-//
-//	vec3 T1 = (wh.z < 0.99999) ? normalize(cross(vec3(0.0, 0.0, 1.0), wh)) : vec3(1.0, 0.0, 0.0);
-//	vec3 T2 = cross(wh, T1);
-//
-//	vec2 p = SampleDiskPolar(u0, u1);
-//
-//	float h = sqrt(1.0 - Sqr(p.x));
-//	p.y = mix((1.0 + wh.z) / 2.0, h, p.y);
-//
-//	float pz = sqrt(max(0.0, 1.0 - Sqr(length(p))));
-//	vec3 nh = p.x * T1 + p.y * T2 + pz * wh;
-//	
-//	return normalize(vec3(nh.x * a, nh.y * a, max(EPSILON, nh.z)));
+vec3 Sample_ggx_m(vec3 w, float a, float u0, float u1){
 	vec3 v = w;
 	//Section 3.2: transforming the view direction to the hemisphere configuration
 	vec3 Vh = normalize(vec3(a * v.x, a * v.y, v.z));
@@ -59,5 +42,15 @@ vec3 Sample_m(vec3 w, float a, float u0, float u1){
 	vec3 Ne = normalize(vec3(a * Nh.x, a * Nh.y, max(0.0, Nh.z)));
 
 	return Ne;
-
+}
+vec3 f_ggx(vec3 wo, vec3 wi, vec3 m, float a, Material mat){
+	vec3 F0 = mix(vec3(0.04), mat.albedo, mat.metallic);
+    vec3 F = F(wo, m, F0);
+	return D_ggx(m, a) * F * G_ggx(wo, wi, a) / max(EPSILON * 100.0, 4.0 * SCosTheta(wi) * SCosTheta(wo));
+}
+vec3 Sample_ggx(vec3 wo, float a, Material mat, float u0, float u1, out vec3 wi, out vec3 m, out float pdf){
+	m = Sample_ggx_m(wo, a, u0, u1);
+	wi = reflect(-wo, m);
+	pdf = VNDF_ggx(wo, m, a) / max(EPSILON, 4.0 * sdot(wo, m));
+	return f_ggx(wo, wi, m, a, mat);
 }
