@@ -28,7 +28,10 @@ void RenderCamera::Render(
 
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, environmentMap.GetMapID());
-	
+	integrator.SetUint("envMapWidth", environmentMap.GetDims().x);
+	integrator.SetUint("envMapHeight", environmentMap.GetDims().y);
+	environmentMap.BindBins();
+
 	integrator.Use();
 	glDispatchCompute(film.GetResolution().x / 8, film.GetResolution().y / 4, 1);
 	glMemoryBarrier(GL_ALL_BARRIER_BITS);

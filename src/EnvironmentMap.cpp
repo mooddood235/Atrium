@@ -39,8 +39,8 @@ float* EnvironmentMap::LoadEnvironmentMap(const std::string& path) {
 	return data;
 }
 void EnvironmentMap::CreateBins(glm::vec3* data, unsigned int x0, unsigned int x1, unsigned int y0, unsigned int y1) {
-	unsigned int w = x1 - x0;
-	unsigned int h = y1 - y0;
+	unsigned int w = x1 - x0 + 1;
+	unsigned int h = y1 - y0 + 1;
 
 	glm::vec3 radiance = glm::vec3(0.0f);
 
@@ -50,17 +50,17 @@ void EnvironmentMap::CreateBins(glm::vec3* data, unsigned int x0, unsigned int x
 			radiance += data[flat];
 		}
 	}
-	if (glm::length(radiance) <= minRadiance || w * h <= smallestBinArea || w * h == 0) {
+	if (glm::length(radiance) <= minRadiance || w * h <= smallestBinArea || w * h == 1) {
 		bins.push_back(glm::uvec4(x0, x1, y0, y1));
 		return;
 	}
 	if (w > h) {
-		unsigned int xSplit = w / 2 + x0;
+		unsigned int xSplit = (w - 1) / 2 + x0;
 		CreateBins(data, x0, xSplit, y0, y1);
 		CreateBins(data, xSplit + 1, x1, y0, y1);
 	}
 	else {
-		unsigned int ySplit = h / 2 + y0;
+		unsigned int ySplit = (h - 1) / 2 + y0;
 		CreateBins(data, x0, x1, y0, ySplit);
 		CreateBins(data, x0, x1, ySplit + 1, y1);
 	}
@@ -93,13 +93,16 @@ void EnvironmentMap::GenerateBinsSSBO() {
 
 	glGenBuffers(1, &binsSSBO);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, binsSSBO);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::uvec4) * bins.size(), binsArray, GL_STATIC_DRAW);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(Bin) * bins.size(), binsArray, GL_STATIC_DRAW);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	delete[] binsArray;
 }
 void EnvironmentMap::BindBins() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 4, binsSSBO);
+}
+glm::uvec2 EnvironmentMap::GetDims() const{
+	return glm::uvec2(width, height);
 }
 unsigned int EnvironmentMap::GetMapID() const {
 	return mapID;

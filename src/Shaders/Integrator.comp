@@ -49,6 +49,9 @@ struct Material{
     float metallic;
     vec2 pad2;
 };
+struct Bin{
+    float x0, x1, y0, y1;
+};
 // ---------------- Constants ----------------------------
 HitInfo NoHit = HitInfo(false, 1./0., vec3(0), vec3(0), -1);
 
@@ -57,6 +60,7 @@ Ray GenCamRay();
 vec3 Sample();
 vec3 At(Ray ray, float t);
 vec3 SampleEnvMap(vec3 dir);
+vec3 SampleEnvBins(out float pdf);
 HitInfo Hit_Triangle(Ray ray, Triangle triangle);
 HitInfo Hit_AABB(Ray ray, vec3 invDir, uint dirIsNeg[3], vec3 cornerMin, vec3 cornerMax);
 HitInfo Hit_BVH(Ray ray);
@@ -68,6 +72,8 @@ uniform uint renderMode;
 uniform Camera camera;
 layout(rgba32f, binding = 0) uniform image2D film;
 layout(binding = 1) uniform sampler2D environmentMap;
+uniform uint envMapWidth;
+uniform uint envMapHeight;
 
 // --------------- Buffers ------------------
 layout (std140, binding = 0) buffer Vertices{
@@ -83,7 +89,7 @@ layout (std140, binding = 3) buffer Materials{
     Material materials[];
 };
 layout(std140, binding = 4) buffer EnvBins{
-    uvec4 envBins[];
+    Bin envBins[];
 };
 // ----------------- Work group -------------
 layout(local_size_x = 8, local_size_y = 4) in;
@@ -143,6 +149,7 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             Material mat = materials[hitInfo.matIndex];
+            mat.roughness = 0.5;
             float a = max(0.001, mat.roughness);
 
             if (mat.emission != vec3(0.0)){
@@ -154,6 +161,7 @@ vec3 Sample(){
             vec3 wo = normalize(invTangentSpace * -ray.d);
             vec3 m;
             vec3 wi;
+            float lambertPDF;
 
             if (rand(prngState) <= specChance){
                 m = Sample_m(wo, a, rand(prngState), rand(prngState));
@@ -164,7 +172,9 @@ vec3 Sample(){
                 }
             }
             else{
-                wi = SampleHemisphere(rand(prngState), rand(prngState));
+                //wi = SampleHemisphere(rand(prngState), rand(prngState));
+                wi = SampleEnvBins(lambertPDF);
+                lambertPDF *= (1.0 - specChance);
                 m = normalize(wo + wi);
             }
 
@@ -175,7 +185,7 @@ vec3 Sample(){
             //vec3 mergedBRDF = F * spec + (1.0 - F) * (1.05 / PI) * (1.0 - pow(1.0 - SCosTheta(wo), 5.0));
 
             float specPDF = VNDF(wo, m, a) / max(EPSILON, 4.0 * sdot(wo, m)) * specChance;
-            float lambertPDF = SampleHemispherePDF() * (1.0 - specChance);
+            //float lambertPDF = SampleHemispherePDF() * (1.0 - specChance);
             float pdf = max(EPSILON, lambertPDF + specPDF);
 
             irradiance *= (lambert + spec) / pdf * SCosTheta(wi);
@@ -203,6 +213,29 @@ vec3 SampleEnvMap(vec3 dir)
     
 	return textureLod(environmentMap, uv, 0.0).rgb;
 };
+vec3 SampleEnvBins(out float pdf){
+    float numBins = envBins.length();
+    Bin bin = envBins[uint(round((numBins - 1) * rand(prngState)))];
+    
+    float binWidth = bin.x1 - bin.x0 + 1;
+    float binHeight = bin.y1 - bin.y0 + 1;
+
+    vec2 uv = vec2(binWidth * rand(prngState) + bin.x0, binHeight * rand(prngState) + bin.y0);
+    uv /= vec2(envMapWidth, envMapHeight);
+
+    float phi = uv.x * 2.0 * PI;
+    float theta = uv.y * PI;
+    float sinTheta = sin(theta);
+
+    vec3 sampleDir = normalize(vec3(cos(phi) * sinTheta, sin(phi) * sinTheta, cos(theta)));
+
+    float binArea = binWidth * binHeight;
+    pdf = float(envMapWidth * envMapHeight) / max(EPSILON, numBins * binArea * 2.0 * Sqr(PI) * sinTheta);
+    
+    return sampleDir;
+}
+
+
 HitInfo Hit_Triangle(Ray ray, Triangle triangle){
     Vertex v0 = vertices[triangle.i0];
     Vertex v1 = vertices[triangle.i1];
