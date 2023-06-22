@@ -8,7 +8,7 @@ float D_ggx(vec3 m, float a){
 	return Sqr(a) / (PI * Sqr(Sqr(SCosTheta(m)) * (Sqr(a) - 1.0) + 1.0));
 }
 float VNDF_ggx(vec3 w, vec3 m, float a){
-	return G1_ggx(w, a) / max(EPSILON, SCosTheta(w)) * D_ggx(m, a) * sdot(w, m);
+	return G1_ggx(w, a) / SCosTheta(w) * D_ggx(m, a) * sdot(w, m);
 }
 float Lambda(vec3 w, float a){
 	float tan2Theta = Tan2Theta(w);
@@ -51,6 +51,6 @@ vec3 f_ggx(vec3 wo, vec3 wi, vec3 m, float a, Material mat){
 vec3 Sample_ggx(vec3 wo, float a, Material mat, float u0, float u1, out vec3 wi, out vec3 m, out float pdf){
 	m = Sample_ggx_m(wo, a, u0, u1);
 	wi = reflect(-wo, m);
-	pdf = VNDF_ggx(wo, m, a) / max(EPSILON, 4.0 * sdot(wo, m));
+	pdf = max(EPSILON, VNDF_ggx(wo, m, a)) / (4.0 * sdot(wo, m));
 	return f_ggx(wo, wi, m, a, mat);
 }
