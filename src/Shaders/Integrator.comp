@@ -82,7 +82,9 @@ layout (std140, binding = 2) buffer BVHNodes{
 layout (std140, binding = 3) buffer Materials{
     Material materials[];
 };
-
+layout(std140, binding = 4) buffer EnvBins{
+    uvec4 envBins[];
+};
 // ----------------- Work group -------------
 layout(local_size_x = 8, local_size_y = 4) in;
 

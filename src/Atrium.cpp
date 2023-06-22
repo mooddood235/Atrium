@@ -30,7 +30,7 @@ int main()
 
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::EnvironmentMap environmentMap("EnvironmentMaps/rainforest_trail_4k.hdr");
+    Atrium::EnvironmentMap environmentMap("EnvironmentMaps/blue_photo_studio_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();
