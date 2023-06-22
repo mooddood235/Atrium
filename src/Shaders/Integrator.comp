@@ -174,7 +174,8 @@ vec3 Sample(){
             }
             float weight = BalanceHeuristic(1, pf, 1, pg);
             vec3 f = f_lambert(wo, m, mat) + f_ggx(wo, wi, m, a, mat);
-            irradiance *= (weight / q) * (f / pf);
+
+            irradiance *= (max(EPSILON, weight) / q) * (f / max(EPSILON, pf)) * SCosTheta(wi);
 
             wi = normalize(inverse(invTangentSpace) * wi);
             ray = Ray(hitInfo.p + hitInfo.n * 0.0001, wi);
