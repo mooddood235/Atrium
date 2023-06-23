@@ -50,7 +50,7 @@ vec3 f_ggx(vec3 wo, vec3 wi, vec3 m, float a, Material mat){
 	return D_ggx(m, a) * F * G_ggx(wo, wi, a) / max(EPSILON * 100.0, 4.0 * SCosTheta(wi) * SCosTheta(wo));
 }
 float p_ggx(vec3 wo, vec3 m, float a){
-	return VNDF_ggx(wo, m, a) / (4.0 * sdot(wo, m));
+	return max(EPSILON, VNDF_ggx(wo, m, a)) / (4.0 * sdot(wo, m));
 }
 vec3 Sample_ggx(vec3 wo, float a, Material mat, float u0, float u1, out vec3 wi, out vec3 m, out float pdf){
 	m = Sample_ggx_m(wo, a, u0, u1);

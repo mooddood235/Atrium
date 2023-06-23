@@ -25,7 +25,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene scene = Atrium::Scene("Models/Bunny.gltf");
+    Atrium::Scene scene = Atrium::Scene("Models/Dragon.gltf");
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];

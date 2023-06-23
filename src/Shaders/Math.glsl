@@ -34,6 +34,5 @@ vec3 F(vec3 v, vec3 h, vec3 F0){
 	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - sdot(v, h)), 5.0);
 }
 float BalanceHeuristic(uint nf, float pf, uint ng, float pg){
-    if (pf == 0.0) return 0.0;
     return (nf * pf) / (nf * pf + ng * pg);
 }
