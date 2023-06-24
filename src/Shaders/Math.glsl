@@ -4,6 +4,9 @@ const float EPSILON = 0.0000001;
 float sdot(vec3 v0, vec3 v1){
 	return max(0.0, dot(v0, v1));
 }
+float AbsDot(vec3 v0, vec3 v1){
+    return abs(dot(v0, v1));
+}
 mat3 GetTangentSpace(vec3 n){
     // Choose a helper vector for the cross product
     vec3 helper = vec3(1, 0, 0);
@@ -17,6 +20,7 @@ float Sqr(float x) { return x * x; }
 
 float CosTheta(vec3 w) { return w.z; }
 float Cos2Theta(vec3 w) { return w.z * w.z; }
+float AbsCosTheta(vec3 w) { return abs(w.z); }
 float SCosTheta(vec3 w) { return max(0.0, w.z); }
 float Sin2Theta(vec3 w) { return max(0.0, 1.0 - Cos2Theta(w)); }
 float SinTheta(vec3 w) { return sqrt(Sin2Theta(w)); }
@@ -31,7 +35,7 @@ float SinPhi(vec3 w){
     return sinTheta == 0.0 ? 0.0 : clamp(w.y / sinTheta, -1.0, 1.0);
 }
 vec3 F(vec3 v, vec3 h, vec3 F0){
-	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - sdot(v, h)), 5.0);
+	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - AbsDot(v, h)), 5.0);
 }
 float BalanceHeuristic(uint nf, float pf, uint ng, float pg){
     return (nf * pf) / (nf * pf + ng * pg);
