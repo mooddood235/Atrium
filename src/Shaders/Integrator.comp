@@ -143,8 +143,6 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             Material mat = materials[hitInfo.matIndex];
-            //mat.albedo = vec3(1, 0, 0);
-            mat.roughness = 1.0;
             float a = max(0.001, mat.roughness);
 
             if (mat.emission != vec3(0.0)){
