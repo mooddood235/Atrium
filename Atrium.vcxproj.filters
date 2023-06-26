@@ -174,5 +174,6 @@
     <None Include="src\Shaders\Lambert.glsl" />
     <None Include="src\Shaders\LambertianBRDF.glsl" />
     <None Include="src\Shaders\BXDFHelpers.glsl" />
+    <None Include="src\Shaders\ConductorBSDF.glsl" />
   </ItemGroup>
 </Project>
