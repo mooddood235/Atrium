@@ -35,8 +35,18 @@ float SinPhi(vec3 w){
     float sinTheta = SinTheta(w);
     return sinTheta == 0.0 ? 0.0 : clamp(w.y / sinTheta, -1.0, 1.0);
 }
-vec3 F(vec3 v, vec3 h, vec3 F0){
-	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - AbsDot(v, h)), 5.0);
+vec2 cx_mul(vec2 a, vec2 b){
+    return vec2(a.x*b.x-a.y*b.y, a.x*b.y+a.y*b.x);
+}
+vec2 cx_div(vec2 a, vec2 b){
+    return vec2((a.x*b.x+a.y*b.y) / (b.x*b.x+b.y*b.y), (a.y*b.x-a.x*b.y) / (b.x*b.x+b.y*b.y));
+}
+vec2 cx_sqrt(vec2 a) {
+    float r = length(a);
+    float rpart = SafeSqrt(0.5*(r+a.x));
+    float ipart = SafeSqrt(0.5*(r-a.x));
+    if (a.y < 0.0) ipart = -ipart;
+    return vec2(rpart, ipart);
 }
 float BalanceHeuristic(uint nf, float pf, uint ng, float pg){
     return (nf * pf) / (nf * pf + ng * pg);
