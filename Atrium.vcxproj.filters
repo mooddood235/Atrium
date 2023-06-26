@@ -172,5 +172,7 @@
     <None Include="src\Shaders\GGX.glsl" />
     <None Include="src\Shaders\Material.glsl" />
     <None Include="src\Shaders\Lambert.glsl" />
+    <None Include="src\Shaders\LambertianBRDF.glsl" />
+    <None Include="src\Shaders\BXDFHelpers.glsl" />
   </ItemGroup>
 </Project>

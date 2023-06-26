@@ -17,7 +17,8 @@ mat3 GetTangentSpace(vec3 n){
     return mat3(tangent, binormal, n);
 }
 float Sqr(float x) { return x * x; }
-
+float SafeACos(float x) { return acos(clamp(x, -1.0, 1.0)); }
+float SafeSqrt(float x) { return sqrt(max(0.0, x)); }
 float CosTheta(vec3 w) { return w.z; }
 float Cos2Theta(vec3 w) { return w.z * w.z; }
 float AbsCosTheta(vec3 w) { return abs(w.z); }

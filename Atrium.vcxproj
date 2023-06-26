@@ -202,9 +202,11 @@
     <ClInclude Include="src\Transform.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\Shaders\BXDFHelpers.glsl" />
     <None Include="src\Shaders\GGX.glsl" />
     <None Include="src\Shaders\Integrator.comp" />
     <None Include="src\Shaders\Lambert.glsl" />
+    <None Include="src\Shaders\LambertianBRDF.glsl" />
     <None Include="src\Shaders\Material.glsl" />
     <None Include="src\Shaders\Math.glsl" />
     <None Include="src\Shaders\PRNG.glsl" />
