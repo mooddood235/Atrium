@@ -167,13 +167,11 @@
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />
     <None Include="src\Shaders\PRNG.glsl" />
-    <None Include="src\Shaders\Samplers.glsl" />
     <None Include="src\Shaders\Math.glsl" />
-    <None Include="src\Shaders\GGX.glsl" />
     <None Include="src\Shaders\Material.glsl" />
-    <None Include="src\Shaders\Lambert.glsl" />
     <None Include="src\Shaders\LambertianBRDF.glsl" />
     <None Include="src\Shaders\BXDFHelpers.glsl" />
     <None Include="src\Shaders\ConductorBSDF.glsl" />
+    <None Include="src\Shaders\DielectricBSDF.glsl" />
   </ItemGroup>
 </Project>

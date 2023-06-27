@@ -5,6 +5,7 @@
 #include "BXDFHelpers.glsl"
 #include "LambertianBRDF.glsl"
 #include "ConductorBSDF.glsl"
+#include "DielectricBSDF.glsl"
 
 // ---------------- Structures ----------------
 struct Camera{
@@ -155,11 +156,13 @@ vec3 Sample(){
             vec3 wo = normalize(invTangentSpace * -ray.d);
             
             //BXDFSample bxdfSample = SampleLambertianBRDF(wo, mat.albedo, rand(prngState), rand(prngState));
-            BXDFSample bxdfSample = SampleConductorBSDF(wo, vec2(2.42, 1.0));
+            //BXDFSample bxdfSample = SampleConductorBSDF(wo, vec2(2.42, 1.0));
+            BXDFSample bxdfSample = SampleDielectricBSDF(wo, 1.5, rand(prngState), rand(prngState));
             irradiance *= bxdfSample.f / max(EPSILON, bxdfSample.pdf) * AbsCosTheta(bxdfSample.wi);
 
+            float flip = CosTheta(bxdfSample.wi) > 0.0 ? 1.0 : -1.0;
             vec3 wi = normalize(inverse(invTangentSpace) * bxdfSample.wi);
-            ray = Ray(hitInfo.p + hitInfo.n * 0.0001, wi);
+            ray = Ray(hitInfo.p + hitInfo.n * 0.0001 * flip, wi);
         }
         else{
             irradiance *= SampleEnvMap(ray.d);

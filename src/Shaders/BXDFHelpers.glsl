@@ -7,6 +7,9 @@ struct BXDFSample{
 	float pdf;
 	vec3 wi;
 };
+
+BXDFSample InvalidSample = BXDFSample(vec3(-1.0), 0.0, vec3(0.0));
+
 bool SameHemisphere(vec3 w0, vec3 w1){
 	return w0.z * w1.z > 0;
 }
