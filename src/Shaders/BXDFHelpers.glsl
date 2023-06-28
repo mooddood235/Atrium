@@ -81,3 +81,11 @@ float FrComplex(float cosTheta_i, vec2 eta){
     vec2 r_perp = cx_div(cosTheta_i - eta * cosTheta_t, cosTheta_i + eta * cosTheta_t);
     return (Sqr(length(r_parl)) + Sqr(length(r_perp))) / 2.0;
 }
+vec3 FSchlick(float cosTheta, vec3 F0){
+	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+}
+vec3 F0ToIOR(vec3 F0){
+	F0 = vec3(SafeSqrt(F0.r), SafeSqrt(F0.g), SafeSqrt(F0.b));
+	F0 = min(vec3(0.9999), F0);
+	return (1.0 + F0) / (1.0 - F0);
+}

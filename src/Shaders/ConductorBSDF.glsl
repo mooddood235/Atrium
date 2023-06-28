@@ -9,9 +9,9 @@ vec3 pdf_ConductorBSDF(vec3 wo, vec3 wi){
 	return vec3(0.0);
 }
 
-BXDFSample SampleConductorBSDF(vec3 wo, vec2 eta){
+BXDFSample SampleConductorBSDF(vec3 wo, vec3 albedo){
 	vec3 wi = vec3(-wo.x, -wo.y, wo.z);
-	vec3 f = vec3(FrComplex(AbsCosTheta(wi), eta)) / AbsCosTheta(wi); 
+	vec3 f = FSchlick(AbsCosTheta(wi), albedo) / AbsCosTheta(wi); 
 	float pdf = 1.0;
 
 	return BXDFSample(f, pdf, wi);

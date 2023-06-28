@@ -156,8 +156,8 @@ vec3 Sample(){
             vec3 wo = normalize(invTangentSpace * -ray.d);
             
             //BXDFSample bxdfSample = SampleLambertianBRDF(wo, mat.albedo, rand(prngState), rand(prngState));
-            //BXDFSample bxdfSample = SampleConductorBSDF(wo, vec2(2.42, 1.0));
-            BXDFSample bxdfSample = SampleDielectricBSDF(wo, 1.5, rand(prngState), rand(prngState));
+            BXDFSample bxdfSample = SampleConductorBSDF(wo, vec3(1.0, 0.843, 0.0));
+            //BXDFSample bxdfSample = SampleDielectricBSDF(wo, 1.5, rand(prngState), rand(prngState));
             irradiance *= bxdfSample.f / max(EPSILON, bxdfSample.pdf) * AbsCosTheta(bxdfSample.wi);
 
             float flip = CosTheta(bxdfSample.wi) > 0.0 ? 1.0 : -1.0;
