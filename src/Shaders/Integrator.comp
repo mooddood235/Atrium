@@ -144,7 +144,8 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             Material mat = materials[hitInfo.matIndex];
-            float a = max(0.001, mat.roughness);
+            mat.roughness = 0.1;
+            //float a = max(0.001, mat.roughness);
 
             if (mat.emission != vec3(0.0)){
                 irradiance *= mat.emission;
@@ -156,8 +157,11 @@ vec3 Sample(){
             vec3 wo = normalize(invTangentSpace * -ray.d);
             
             //BXDFSample bxdfSample = SampleLambertianBRDF(wo, mat.albedo, rand(prngState), rand(prngState));
-            BXDFSample bxdfSample = SampleConductorBSDF(wo, vec3(1.0, 0.843, 0.0));
+            BXDFSample bxdfSample = SampleConductorBSDF(wo, mat, rand(prngState), rand(prngState));
             //BXDFSample bxdfSample = SampleDielectricBSDF(wo, 1.5, rand(prngState), rand(prngState));
+            if (bxdfSample == InvalidSample){
+                break;
+            }
             irradiance *= bxdfSample.f / max(EPSILON, bxdfSample.pdf) * AbsCosTheta(bxdfSample.wi);
 
             float flip = CosTheta(bxdfSample.wi) > 0.0 ? 1.0 : -1.0;
