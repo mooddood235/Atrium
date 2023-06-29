@@ -92,45 +92,49 @@ vec3 F0ToIOR(vec3 F0){
 	F0 = min(vec3(0.9999), F0);
 	return (1.0 + F0) / (1.0 - F0);
 }
+bool IsSmooth(float a){
+	return a <= 0.001;
+}
+
+float G1_ggx(vec3 w, float a);
+
 float D_ggx(vec3 m, float a){
-	float tan2Theta = Tan2Theta(m);
-    if (isinf(tan2Theta)) return 0.0;
-    float cos4Theta = Sqr(Cos2Theta(m));
-    if (cos4Theta < 1e-16f) return 0.0;
-    float e = tan2Theta * (Sqr(CosPhi(m) / a) + Sqr(SinPhi(m) / a));
-    return 1.0 / (PI * a * a * cos4Theta * Sqr(1.0 + e));
+	return Sqr(a) / (PI * Sqr(Sqr(AbsCosTheta(m)) * (Sqr(a) - 1.0) + 1.0));
 }
-float Lambda(vec3 w, float a) {
-    float tan2Theta = Tan2Theta(w);
-    if (isinf(tan2Theta)) return 0.0;
-    float alpha2 = Sqr(CosPhi(w) * a) + Sqr(SinPhi(w) * a);
-    return (sqrt(1 + alpha2 * tan2Theta) - 1.0) / 2.0;
+float VNDF_ggx(vec3 w, vec3 m, float a){
+	return G1_ggx(w, a) / AbsCosTheta(w) * D_ggx(m, a) * AbsDot(w, m);
 }
-float G1(vec3 w, float a) { return 1.0 / (1.0 + Lambda(w, a)); }
-float G(vec3 wo, vec3 wi, float a) { return 1.0 / (1.0 + Lambda(wo, a) + Lambda(wi, a)); }
-float VNDF_ggx(vec3 w, vec3 m, float a) {
-        return G1(w, a) / AbsCosTheta(w) * D_ggx(m, a) * AbsDot(w, m);
+float Lambda(vec3 w, float a){
+	float tan2Theta = Tan2Theta(w);
+	if (isinf(tan2Theta) || isnan(tan2Theta)) return 0.0;
+	return (sqrt(1.0 + Sqr(a) * tan2Theta) - 1.0) / 2.0;
 }
-vec3 SampleVNDF_ggx(vec3 w, float a, float u0, float u1) {
-        // Transform _w_ to hemispherical configuration
-        vec3 wh = normalize(vec3(a * w.x, a * w.y, w.z));
-        if (wh.z < 0.0) wh = -wh;
-
-        // Find orthonormal basis for visible normal sampling
-        vec3 T1 = (wh.z < 0.99999f) ? normalize(cross(vec3(0.0, 0.0, 1.0), wh))
-                                        : vec3(1.0, 0.0, 0.0);
-        vec3 T2 = cross(wh, T1);
-
-        // Generate uniformly distributed points on the unit disk
-        vec2 p = SampleUniformDiskPolar(u0, u1);
-
-        // Warp hemispherical projection for visible normal sampling
-        float h = sqrt(1.0 - Sqr(p.x));
-        p.y = mix((1.0 + wh.z) / 2.0, h, p.y);
-
-        // Reproject to hemisphere and transform normal to ellipsoid configuration
-        float pz = sqrt(max(0.0, 1.0 - Sqr(length(p))));
-        vec3 nh = p.x * T1 + p.y * T2 + pz * wh;
-        //CHECK_RARE(1e-5f, nh.z == 0);
-        return normalize(vec3(a * nh.x, a * nh.y, max(1e-6f, nh.z)));
-    }
+float G1_ggx(vec3 w, float a){
+	return 1.0 / (1.0 + Lambda(w, a));
+}
+float G_ggx(vec3 wo, vec3 wi, float a){
+	return 1.0 / (1.0 + Lambda(wo, a) + Lambda(wi, a));
+}
+vec3 SampleGGX(vec3 w, float a, float u0, float u1){
+	// Section 3.2: transforming the view direction to the hemisphere configuration
+	vec3 Vh = normalize(vec3(a * w.x, a * w.y, w.z));
+	// Section 4.1: orthonormal basis (with special case if cross product is zero)
+	float lensq = Vh.x * Vh.x + Vh.y * Vh.y;
+	vec3 T1 = lensq > 0 ? vec3(-Vh.y, Vh.x, 0) * inversesqrt(lensq) : vec3(1,0,0);
+	vec3 T2 = cross(Vh, T1);
+	// Section 4.2: parameterization of the projected area
+	float r = sqrt(u0);
+	float phi = 2.0 * PI * u1;
+	float t1 = r * cos(phi);
+	float t2 = r * sin(phi);
+	float s = 0.5 * (1.0 + Vh.z);
+	t2 = (1.0 - s)*sqrt(max(0.0, 1.0 - t1*t1)) + s*t2;
+	// Section 4.3: reprojection onto hemisphere
+	vec3 Nh = t1*T1 + t2*T2 + sqrt(max(0.0, 1.0 - t1*t1 - t2*t2))*Vh;
+	// Section 3.4: transforming the normal back to the ellipsoid configuration
+	vec3 Ne = normalize(vec3(a * Nh.x, a * Nh.y, max(0.0, Nh.z)));
+	return Ne;
+}
+float pdf_ggx(vec3 wo, vec3 m, float a){
+	return VNDF_ggx(wo, m, a) / (4.0 * AbsDot(wo, m));
+}
