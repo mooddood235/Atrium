@@ -173,5 +173,6 @@
     <None Include="src\Shaders\BXDFHelpers.glsl" />
     <None Include="src\Shaders\ConductorBSDF.glsl" />
     <None Include="src\Shaders\DielectricBSDF.glsl" />
+    <None Include="src\Shaders\UberBSDF.glsl" />
   </ItemGroup>
 </Project>

@@ -6,6 +6,7 @@
 #include "LambertianBRDF.glsl"
 #include "ConductorBSDF.glsl"
 #include "DielectricBSDF.glsl"
+#include "UberBSDF.glsl"
 
 // ---------------- Structures ----------------
 struct Camera{
@@ -144,8 +145,6 @@ vec3 Sample(){
 
         if (hitInfo.didHit){
             Material mat = materials[hitInfo.matIndex];
-            //mat.roughness = 0.002;
-            //float a = max(0.001, mat.roughness);
 
             if (mat.emission != vec3(0.0)){
                 irradiance *= mat.emission;
@@ -158,8 +157,8 @@ vec3 Sample(){
             
             //BXDFSample bxdfSample = SampleLambertianBRDF(wo, mat.albedo, rand(prngState), rand(prngState));
             //BXDFSample bxdfSample = SampleConductorBSDF(wo, mat, rand(prngState), rand(prngState));
-            BXDFSample bxdfSample = SampleDielectricBSDF(wo, mat, rand(prngState), rand(prngState), rand(prngState));
-
+            //BXDFSample bxdfSample = SampleDielectricBSDF(wo, mat, rand(prngState), rand(prngState));
+            BXDFSample bxdfSample = SampleUberBSDF(wo, mat, rand(prngState), rand(prngState), rand(prngState), rand(prngState));
             if (bxdfSample == InvalidSample){
                 irradiance = vec3(0.0);
                 break;

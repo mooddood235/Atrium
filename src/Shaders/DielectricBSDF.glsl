@@ -10,7 +10,7 @@ float pdf_DielectricBSDF(vec3 wo, vec3 wi, float eta){
 	return 0.0;
 }
 
-BXDFSample SampleDielectricBSDF(vec3 wo, Material mat, float u0, float u1, float u2) {
+BXDFSample SampleDielectricBSDF(vec3 wo, Material mat, float u0, float u1) {
 	vec3 wi;
 	vec3 f;
 	float pdf;

@@ -210,6 +210,7 @@
     <None Include="src\Shaders\Material.glsl" />
     <None Include="src\Shaders\Math.glsl" />
     <None Include="src\Shaders\PRNG.glsl" />
+    <None Include="src\Shaders\UberBSDF.glsl" />
     <None Include="src_display\Shaders\display.frag" />
     <None Include="src_display\Shaders\display.vert" />
   </ItemGroup>
