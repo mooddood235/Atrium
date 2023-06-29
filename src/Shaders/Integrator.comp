@@ -158,7 +158,7 @@ vec3 Sample(){
             
             //BXDFSample bxdfSample = SampleLambertianBRDF(wo, mat.albedo, rand(prngState), rand(prngState));
             //BXDFSample bxdfSample = SampleConductorBSDF(wo, mat, rand(prngState), rand(prngState));
-            BXDFSample bxdfSample = SampleDielectricBSDF(wo, mat, 1.5, rand(prngState), rand(prngState), rand(prngState));
+            BXDFSample bxdfSample = SampleDielectricBSDF(wo, mat, rand(prngState), rand(prngState), rand(prngState));
 
             if (bxdfSample == InvalidSample){
                 irradiance = vec3(0.0);

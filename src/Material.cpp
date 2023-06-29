@@ -7,11 +7,16 @@ Material::Material() {
 	roughnessFactor = 1.0f;
 	metallicFactor = 0.0f;
 	emissiveFactor = glm::vec3(0.0f);
+	transmissionFactor = 0.0f;
+	ior = 1.45f;
 }
 
-Material::Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor){
+Material::Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor
+	, float transmissionFactor, float ior){
 	this->albedoFactor = albedoFactor;
 	this->roughnessFactor = roughnessFactor;
 	this->metallicFactor = metallicFactor;
 	this->emissiveFactor = emissiveFactor;
+	this->transmissionFactor = transmissionFactor;
+	this->ior = ior;
 }

@@ -6,12 +6,15 @@ namespace Atrium {
 	struct Material {
 	public:
 		Material();
-		Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor);
+		Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor
+		, float transmissionFactor, float ior);
 	public:
 		glm::vec3 albedoFactor;
 		float roughnessFactor;
 		float metallicFactor;
 		glm::vec3 emissiveFactor;
+		float transmissionFactor;
+		float ior;
 	};
 }
 

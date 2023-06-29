@@ -172,7 +172,8 @@ void BVH::GenerateSSBOs() {
 		float pad1;
 		float roughness;
 		float metallic;
-		glm::vec2 pad2;
+		float transmission;
+		float ior;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
@@ -180,6 +181,8 @@ void BVH::GenerateSSBOs() {
 			emission = material.emissiveFactor;
 			roughness = material.roughnessFactor;
 			metallic = material.metallicFactor;
+			transmission = material.transmissionFactor;
+			ior = material.ior;
 		}
 	};
 	#pragma pack(pop)

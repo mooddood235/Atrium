@@ -89,10 +89,21 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		glm::vec3(pbr.baseColorFactor[0], pbr.baseColorFactor[1], pbr.baseColorFactor[2]),
 		pbr.roughnessFactor,
 		pbr.metallicFactor,
-		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2])
+		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2]),
+		0.0f,
+		1.45f
 	);
 	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
 	if (extension != gltfMaterial.extensions.end()) {
 		material.emissiveFactor *= extension->second.Get("emissiveStrength").GetNumberAsDouble();
 	}
+	extension = gltfMaterial.extensions.find("KHR_materials_transmission");
+	if (extension != gltfMaterial.extensions.end()) {
+		material.transmissionFactor = extension->second.Get("transmissionFactor").GetNumberAsDouble();
+	}
+	extension = gltfMaterial.extensions.find("KHR_materials_ior");
+	if (extension != gltfMaterial.extensions.end()) {
+		material.ior = extension->second.Get("ior").GetNumberAsDouble();
+	}
+
 }

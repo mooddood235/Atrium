@@ -5,5 +5,6 @@ struct Material{
     float pad1;
     float roughness;
     float metallic;
-    vec2 pad2;
+    float transmission;
+    float ior;
 };
