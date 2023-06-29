@@ -34,9 +34,8 @@ vec2 SampleUniformDiskPolar(float u0, float u1) {
     float theta = 2.0 * PI * u1;
     return normalize(vec2(r * cos(theta), r * sin(theta)));
 }
-bool Refract(vec3 wi, float eta, out float etap, out vec3 wt){
-	vec3 n = vec3(0.0, 0.0, 1.0);
-	float cosTheta_i = CosTheta(wi);
+bool Refract(vec3 wi, vec3 n, float eta, out float etap, out vec3 wt){
+	float cosTheta_i = dot(wi, n);
 
 	if (cosTheta_i < 0.0){
 		eta = 1.0 / eta;
@@ -85,7 +84,7 @@ float FrComplex(float cosTheta_i, vec2 eta){
     return (Sqr(length(r_parl)) + Sqr(length(r_perp))) / 2.0;
 }
 vec3 FSchlick(float cosTheta, vec3 F0){
-	return F0 + (1.0 - F0) * pow(1.0 - cosTheta, 5.0);
+	return F0 + (1.0 - F0) * pow(max(0.0, 1.0 - cosTheta), 5.0);
 }
 vec3 F0ToIOR(vec3 F0){
 	F0 = vec3(SafeSqrt(F0.r), SafeSqrt(F0.g), SafeSqrt(F0.b));
@@ -103,6 +102,9 @@ float D_ggx(vec3 m, float a){
 }
 float VNDF_ggx(vec3 w, vec3 m, float a){
 	return G1_ggx(w, a) / AbsCosTheta(w) * D_ggx(m, a) * AbsDot(w, m);
+}
+float pdf_ggx(vec3 wo, vec3 m, float a){
+	return VNDF_ggx(wo, m, a) / (4.0 * AbsDot(wo, m));
 }
 float Lambda(vec3 w, float a){
 	float tan2Theta = Tan2Theta(w);
@@ -135,6 +137,4 @@ vec3 SampleGGX(vec3 w, float a, float u0, float u1){
 	vec3 Ne = normalize(vec3(a * Nh.x, a * Nh.y, max(0.0, Nh.z)));
 	return Ne;
 }
-float pdf_ggx(vec3 wo, vec3 m, float a){
-	return VNDF_ggx(wo, m, a) / (4.0 * AbsDot(wo, m));
-}
+

@@ -11,27 +11,24 @@ vec3 pdf_ConductorBSDF(vec3 wo, vec3 wi){
 }
 
 BXDFSample SampleConductorBSDF(vec3 wo, Material mat, float u0, float u1){
-//	vec3 wi = vec3(-wo.x, -wo.y, wo.z);
-//	vec3 f = FSchlick(AbsCosTheta(wi), albedo) / AbsCosTheta(wi); 
-//	float pdf = 1.0;
-//
-//	return BXDFSample(f, pdf, wi);
-    
+    vec3 wi;
+    vec3 f;
+    float pdf;
+
     if (IsSmooth(mat.roughness)) {
-        // Sample perfect specular conductor BRDF
-        vec3 wi = vec3(-wo.x, -wo.y, wo.z);
-        vec3 f = FSchlick(AbsCosTheta(wi), mat.albedo) / AbsCosTheta(wi); 
-        float pdf = 1.0;
-        return BXDFSample(f, pdf, wi);
+        wi = vec3(-wo.x, -wo.y, wo.z);
+        f = FSchlick(AbsCosTheta(wi), mat.albedo) / AbsCosTheta(wi); 
+        pdf = 1.0;
     }
-    vec3 m = SampleGGX(wo, mat.roughness, u0, u1);
-    vec3 wi = reflect(-wo, m);
+    else{
+        vec3 m = SampleGGX(wo, mat.roughness, u0, u1);
+        wi = reflect(-wo, m);
 
-    if (!SameHemisphere(wo, wi)) return InvalidSample;
+        if (!SameHemisphere(wo, wi)) return InvalidSample;
 
-    vec3 F = FSchlick(AbsCosTheta(wi), mat.albedo);
-    vec3 f = D_ggx(m, mat.roughness) * F * G_ggx(wo, wi, mat.roughness) / (4.0 * AbsCosTheta(wi) * AbsCosTheta(wo));
-    float pdf = pdf_ggx(wo, m, mat.roughness);
-
+        vec3 F = FSchlick(AbsCosTheta(wi), mat.albedo);
+        f = D_ggx(m, mat.roughness) * F * G_ggx(wo, wi, mat.roughness) / (4.0 * AbsCosTheta(wi) * AbsCosTheta(wo));
+        pdf = pdf_ggx(wo, m, mat.roughness);
+    }
     return BXDFSample(f, pdf, wi);
 }
