@@ -9,9 +9,9 @@ BXDFSample SampleUberBSDF(vec3 wo, Material mat, float u0, float u1, float u2, f
 	}
 	else{
 		const float specChance = 0.5;
-		if (u1 < specChance){
+		if (mat.transmission > 0.0 || u1 < specChance){
 			bxdfSample = SampleDielectricBSDF(wo, mat, u2, u3);
-			bxdfSample.pdf *= specChance;
+			bxdfSample.pdf *= mat.transmission > 0.0 ? 1.0 : specChance;
 		}
 		else{
 			bxdfSample = SampleLambertianBRDF(wo, mat.albedo, u2, u3);
