@@ -21,6 +21,7 @@ Mesh::Mesh(const tinygltf::Node& gltfNode, Transform parentTransform, const tiny
 void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
 	std::vector<glm::vec3> positions;
 	std::vector<glm::vec3> normals;
+	std::vector<glm::vec2> uvs;
 
 	for (const auto& x : primitive.attributes) {
 		std::string attributeName = x.first;
@@ -39,25 +40,33 @@ void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::
 				std::cout << "LOAD GLTF ERROR: Only position data that is Vec3s of floats is supported." << std::endl;
 				exit(-1);
 			}
-			positions.resize(accessor.count);
-			for (unsigned int i = 0; i < positions.size(); i++) positions[i] = *(glm::vec3*)(data + stride * i);
+			positions.reserve(accessor.count);
+			for (unsigned int i = 0; i < accessor.count; i++) positions.push_back(*(glm::vec3*)(data + stride * i));
 		}
 		else if (attributeName == "NORMAL") {
 			if (!(accessor.type == TINYGLTF_TYPE_VEC3 && accessor.componentType == GL_FLOAT)) {
 				std::cout << "LOAD GLTF ERROR: Only normal data that is Vec3s of floats is supported." << std::endl;
 				exit(-1);
 			}
-			normals.resize(accessor.count);
-			for (unsigned int i = 0; i < normals.size(); i++) normals[i] = *(glm::vec3*)(data + stride * i);
+			normals.reserve(accessor.count);
+			for (unsigned int i = 0; i < accessor.count; i++) normals.push_back(*(glm::vec3*)(data + stride * i));
 		}
-	}
-	if (positions.size() != normals.size()) {
-		std::cout << "LOAD GLTF ERROR: Mismatching attribute count." << std::endl;
-		exit(-1);
+		else if (attributeName == "TEXCOORD_0") {
+			if (!(accessor.type == TINYGLTF_TYPE_VEC2 && accessor.componentType == GL_FLOAT)) {
+				std::cout << "LOAD GLTF ERROR: Only UV data that is Vec2s of floats is supported." << std::endl;
+				exit(-1);
+			}
+			uvs.reserve(accessor.count);
+			for (unsigned int i = 0; i < accessor.count; i++) uvs.push_back(*(glm::vec2*)(data + stride * i));
+		}
 	}
 	vertices.reserve(positions.size());
 
-	for (unsigned int i = 0; i < positions.size(); i++) vertices.push_back(Vertex(positions[i], normals[i]));
+	for (unsigned int i = 0; i < positions.size(); i++) {	
+		glm::vec3 normal = i < normals.size() ? normals[i] : glm::vec3(0.0f);
+		glm::vec2 uv = i < uvs.size() ? uvs[i] : glm::vec2(0.0f);
+		vertices.push_back(Vertex(positions[i], normal, uv));
+	}
 }
 void Mesh::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
 	const tinygltf::Accessor& accessor = model.accessors[primitive.indices];

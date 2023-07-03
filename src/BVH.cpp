@@ -130,10 +130,14 @@ void BVH::GenerateSSBOs() {
 		float pad0;
 		glm::vec3 n;
 		float pad1;
+		glm::vec2 uv;
+		glm::vec2 pad2;
+
 		GPUVertex() {}
 		GPUVertex(const Vertex& vertex) {
 			p = vertex.position;
 			n = vertex.normal;
+			uv = vertex.uv;
 		}
 	};
 	struct GPUTriangle {
