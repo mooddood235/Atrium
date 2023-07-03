@@ -5,16 +5,21 @@
 
 using namespace Atrium;
 Texture::Texture() {
-	textureID = -1;
-	path = "NULL";
+	textureID = 0;
+	path = "";
+	isNull = true;
 }
 Texture::Texture(const std::string& path) {
 	this->path = path;
 	LoadTexture(path);
+	isNull = false;
 }
 
 unsigned int Texture::GetTextureID() const{
 	return textureID;
+}
+bool Texture::IsNull() const {
+	return isNull;
 }
 
 void Texture::LoadTexture(const std::string& path) {
