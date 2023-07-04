@@ -1,3 +1,4 @@
+
 struct Material{
     vec3 albedo;
     float pad0;
@@ -7,4 +8,6 @@ struct Material{
     float metallic;
     float transmission;
     float ior;
+    uint64_t albedoTexture;
+    vec2 pad2;
 };

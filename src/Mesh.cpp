@@ -57,7 +57,12 @@ void Mesh::LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::
 				exit(-1);
 			}
 			uvs.reserve(accessor.count);
-			for (unsigned int i = 0; i < accessor.count; i++) uvs.push_back(*(glm::vec2*)(data + stride * i));
+			for (unsigned int i = 0; i < accessor.count; i++) {
+				glm::vec2 uv = *(glm::vec2*)(data + stride * i);
+				uv.y = 1.0 - uv.y; // Flip uv
+				uvs.push_back(uv);
+			}
+				
 		}
 	}
 	vertices.reserve(positions.size());

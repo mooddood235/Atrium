@@ -26,6 +26,7 @@ int main()
     
     // Objects
     Atrium::Scene scene = Atrium::Scene("Models/SprayPaint/SprayPaint.gltf");
+    scene.bvh.MakeTextureHandlesResident();
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
@@ -71,7 +72,7 @@ int main()
         //glfwSwapBuffers(window);
         glfwPollEvents();
     }
-
+    scene.bvh.MakeTextureHandlesNonResident();
     glfwTerminate();
     return 0;
 }

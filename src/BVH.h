@@ -19,6 +19,8 @@ namespace Atrium {
 		BVH();
 		BVH(const std::vector<Node*> sceneHierarchy, SplitMethod splitMethod);
 		void Bind() const;
+		void MakeTextureHandlesResident() const;
+		void MakeTextureHandlesNonResident() const;
 		unsigned int GetDepth() const;
 	private:
 		void LoadMeshes(const std::vector<Node*> sceneHierarchy);

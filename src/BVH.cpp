@@ -178,6 +178,8 @@ void BVH::GenerateSSBOs() {
 		float metallic;
 		float transmission;
 		float ior;
+		uint64_t albedoTexture;
+		glm::vec2 pad2;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
@@ -187,6 +189,7 @@ void BVH::GenerateSSBOs() {
 			metallic = material.metallicFactor;
 			transmission = material.transmissionFactor;
 			ior = material.ior;
+			albedoTexture = material.albedoTextureHandle;
 		}
 	};
 	#pragma pack(pop)
@@ -248,6 +251,14 @@ void BVH::Bind() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, trianglesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, nodesSSBO);
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, materialsSSBO);
+}
+void BVH::MakeTextureHandlesResident() const{
+	for (const Material& material : materials)
+		if (material.albedoTextureHandle) glMakeTextureHandleResidentARB(material.albedoTextureHandle - 1);
+}
+void BVH::MakeTextureHandlesNonResident() const{
+	for (const Material& material : materials)
+		if (material.albedoTextureHandle) glMakeTextureHandleNonResidentARB(material.albedoTextureHandle - 1);
 }
 void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
 	for (const Node* node : sceneHierarchy)
