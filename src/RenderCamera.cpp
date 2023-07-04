@@ -1,4 +1,5 @@
 #include "RenderCamera.h"
+#include <iostream>
 
 using namespace Atrium;
 
@@ -8,12 +9,16 @@ void RenderCamera::Init() {
 void RenderCamera::Render(
 	const Film& film,
 	const Camera& camera,
-	const Scene& scene,
 	const EnvironmentMap& environmentMap,
 	unsigned int samples,
 	unsigned int depth,
 	unsigned int seed,
 	RenderMode renderMode) {
+
+	if (!sceneIsBound) {
+		std::cout << "Render Error: you must bind a scene before rendering." << std::endl;
+		exit(-1);
+	}
 
 	integrator.SetUint("seed", seed);
 	integrator.SetUint("samples", samples);
@@ -21,8 +26,6 @@ void RenderCamera::Render(
 	integrator.SetUint("renderMode", (unsigned int)renderMode);
 	integrator.SetMat4("camera.modelMatrix", camera.GetTransform(Space::Global).GetMatrix());
 	integrator.SetMat4("camera.projectionMatrix", camera.GetProjectionMatrix());
-
-	scene.bvh.Bind();
 
 	glBindImageTexture(0, film.GetTextureID(), 0, GL_FALSE, 0, GL_WRITE_ONLY, GL_RGBA32F);
 
@@ -38,4 +41,16 @@ void RenderCamera::Render(
 	integrator.UnUse();
 }
 
+void RenderCamera::BindScene(const Scene& scene){
+	scene.bvh.Bind();
+	scene.bvh.MakeTextureHandlesResident();
+	sceneIsBound = true;
+}
+
+void RenderCamera::UnBindScene(const Scene& scene){
+	scene.bvh.MakeTextureHandlesNonResident();
+	sceneIsBound = false;
+}
+
 ShaderProgram RenderCamera::integrator = ShaderProgram();
+bool RenderCamera::sceneIsBound = false;

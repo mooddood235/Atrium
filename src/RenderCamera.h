@@ -19,14 +19,16 @@ namespace Atrium {
 		static void Render(
 			const Film& film,
 			const Camera& camera,
-			const Scene& scene,
 			const EnvironmentMap& environmentMap,
 			unsigned int samples,
 			unsigned int depth,
 			unsigned int seed,
 			RenderMode renderMode);
+		static void BindScene(const Scene& scene);
+		static void UnBindScene(const Scene& scene);
 	private:
 		static ShaderProgram integrator;
+		static bool sceneIsBound;
 	};
 }
 

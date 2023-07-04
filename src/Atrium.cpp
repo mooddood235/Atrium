@@ -26,7 +26,6 @@ int main()
     
     // Objects
     Atrium::Scene scene = Atrium::Scene("Models/SprayPaint/SprayPaint.gltf");
-    scene.bvh.MakeTextureHandlesResident();
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
@@ -43,6 +42,9 @@ int main()
     const unsigned int samplesPerTick = 1;
     const unsigned int depth = 10;
 
+    // Bind scene
+    Atrium::RenderCamera::BindScene(scene);
+
     // Render loop
     while (!glfwWindowShouldClose(window)) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -57,7 +59,7 @@ int main()
             renderMode = Atrium::RenderMode::Write;
         }
         
-        Atrium::RenderCamera::Render(film, *camera, scene, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
+        Atrium::RenderCamera::Render(film, *camera, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
 
         samplesTaken += samplesPerTick;
 
@@ -72,7 +74,7 @@ int main()
         //glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    scene.bvh.MakeTextureHandlesNonResident();
+    Atrium::RenderCamera::UnBindScene(scene);
     glfwTerminate();
     return 0;
 }
