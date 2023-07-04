@@ -22,6 +22,10 @@ bool Texture::IsNull() const {
 	return isNull;
 }
 
+uint64_t Texture::GetTextureHandle(){
+	return isNull ? 0 : glGetTextureHandleARB(textureID) + 1;
+}
+
 void Texture::LoadTexture(const std::string& path) {
 	stbi_set_flip_vertically_on_load(true);
 	const char* pathCString = path.c_str();

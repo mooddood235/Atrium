@@ -100,7 +100,8 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		pbr.metallicFactor,
 		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2]),
 		0.0f,
-		1.45f
+		1.45f,
+		GetTexture(pbr.baseColorTexture, model)
 	);
 	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
 	if (extension != gltfMaterial.extensions.end()) {
@@ -115,4 +116,10 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		material.ior = extension->second.Get("ior").GetNumberAsDouble();
 	}
 
+}
+
+Texture Mesh::GetTexture(const tinygltf::TextureInfo& textureInfo, const tinygltf::Model& model){
+	if (textureInfo.index < 0) return Texture();
+	std::string pathFromDirectory = model.images[model.textures[textureInfo.index].source].uri;
+	return model.directory + "/" + pathFromDirectory;
 }

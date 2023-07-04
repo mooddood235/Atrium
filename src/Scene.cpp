@@ -34,6 +34,7 @@ void Scene::LoadModel(tinygltf::Model& model, const std::string& scenePath) {
 		exit(-1);
 	}
 	if (!warning.empty()) std::cout << warning << std::endl;
+	model.directory = scenePath.substr(0, scenePath.find_last_of('/'));
 }
 void Scene::CreateHierarchy(const tinygltf::Model& model) {
 	const tinygltf::Scene defaultScene = model.defaultScene >= 0 ? model.scenes[model.defaultScene] : model.scenes[0];

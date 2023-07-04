@@ -16,6 +16,7 @@ namespace Atrium {
 		void LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
 		void LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
 		void LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
+		Texture GetTexture(const tinygltf::TextureInfo& textureInfo, const tinygltf::Model& model);
 	public:
 		std::vector<Vertex> vertices;
 		std::vector<unsigned int> indices;

@@ -9,14 +9,20 @@ Material::Material() {
 	emissiveFactor = glm::vec3(0.0f);
 	transmissionFactor = 0.0f;
 	ior = 1.45f;
+
+	albedoTexture = Texture();
+	albedoTextureHandle = 0;
 }
 
 Material::Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor
-	, float transmissionFactor, float ior){
+	, float transmissionFactor, float ior, Texture albedoTexture) {
 	this->albedoFactor = albedoFactor;
 	this->roughnessFactor = roughnessFactor;
 	this->metallicFactor = metallicFactor;
 	this->emissiveFactor = emissiveFactor;
 	this->transmissionFactor = transmissionFactor;
 	this->ior = ior;
+	
+	this->albedoTexture = albedoTexture;
+	albedoTextureHandle = albedoTexture.GetTextureHandle();
 }
