@@ -9,9 +9,9 @@ Texture::Texture() {
 	path = "";
 	isNull = true;
 }
-Texture::Texture(const std::string& path) {
+Texture::Texture(const std::string& path, bool isSRGB) {
 	this->path = path;
-	LoadTexture(path);
+	LoadTexture(path, isSRGB);
 	isNull = false;
 }
 
@@ -26,7 +26,7 @@ uint64_t Texture::GetTextureHandle() const{
 	return isNull ? 0 : glGetTextureHandleARB(textureID);
 }
 
-void Texture::LoadTexture(const std::string& path) {
+void Texture::LoadTexture(const std::string& path, bool isSRGB) {
 	stbi_set_flip_vertically_on_load(true);
 	const char* pathCString = path.c_str();
 
@@ -43,8 +43,8 @@ void Texture::LoadTexture(const std::string& path) {
 	}
 
 	GLenum internalFormat = GL_RED, format = GL_RED;
-	if (numChannels == 3) internalFormat = GL_RGB, format = GL_RGB;
-	else if (numChannels == 4) internalFormat = GL_RGBA, format = GL_RGBA;
+	if (numChannels == 3) internalFormat = isSRGB ? GL_SRGB : GL_RGB, format = GL_RGB;
+	else if (numChannels == 4) internalFormat = isSRGB ? GL_SRGB_ALPHA : GL_RGBA, format = GL_RGBA;
 
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 	stbi_image_free(data);

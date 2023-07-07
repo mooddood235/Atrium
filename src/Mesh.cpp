@@ -106,8 +106,8 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2]),
 		0.0f,
 		1.45f,
-		GetTexture(pbr.baseColorTexture, model),
-		GetTexture(pbr.metallicRoughnessTexture, model)
+		GetTexture(pbr.baseColorTexture, model, true),
+		GetTexture(pbr.metallicRoughnessTexture, model, false)
 	);
 	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
 	if (extension != gltfMaterial.extensions.end()) {
@@ -124,8 +124,8 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 
 }
 
-Texture Mesh::GetTexture(const tinygltf::TextureInfo& textureInfo, const tinygltf::Model& model){
+Texture Mesh::GetTexture(const tinygltf::TextureInfo& textureInfo, const tinygltf::Model& model, bool isSRGB){
 	if (textureInfo.index < 0) return Texture();
 	std::string pathFromDirectory = model.images[model.textures[textureInfo.index].source].uri;
-	return model.directory + "/" + pathFromDirectory;
+	return Texture(model.directory + "/" + pathFromDirectory, isSRGB);
 }
