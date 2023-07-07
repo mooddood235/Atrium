@@ -106,7 +106,8 @@ void Mesh::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Mo
 		glm::vec3(gltfMaterial.emissiveFactor[0], gltfMaterial.emissiveFactor[1], gltfMaterial.emissiveFactor[2]),
 		0.0f,
 		1.45f,
-		GetTexture(pbr.baseColorTexture, model)
+		GetTexture(pbr.baseColorTexture, model),
+		GetTexture(pbr.metallicRoughnessTexture, model)
 	);
 	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
 	if (extension != gltfMaterial.extensions.end()) {

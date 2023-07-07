@@ -9,5 +9,5 @@ struct Material{
     float transmission;
     float ior;
     uint64_t albedoTexture;
-    vec2 pad2;
+    uint64_t metallicRoughnessTexture;
 };

@@ -179,7 +179,7 @@ void BVH::GenerateSSBOs() {
 		float transmission;
 		float ior;
 		uint64_t albedoTexture;
-		glm::vec2 pad2;
+		uint64_t metallicRoughnessTexture;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
@@ -189,7 +189,8 @@ void BVH::GenerateSSBOs() {
 			metallic = material.metallicFactor;
 			transmission = material.transmissionFactor;
 			ior = material.ior;
-			albedoTexture = material.albedoTextureHandle;
+			albedoTexture = material.albedoTexture.IsNull() ? 0 : material.albedoTexture.GetTextureHandle() + 1;
+			metallicRoughnessTexture = material.metallicRoughnessTexture.IsNull() ? 0 : material.metallicRoughnessTexture.GetTextureHandle() + 1;
 		}
 	};
 	#pragma pack(pop)
@@ -253,12 +254,16 @@ void BVH::Bind() const{
 	glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, materialsSSBO);
 }
 void BVH::MakeTextureHandlesResident() const{
-	for (const Material& material : materials)
-		if (material.albedoTextureHandle) glMakeTextureHandleResidentARB(material.albedoTextureHandle - 1);
+	for (const Material& material : materials) {
+		if (!material.albedoTexture.IsNull()) glMakeTextureHandleResidentARB(material.albedoTexture.GetTextureHandle());
+		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+	}
 }
 void BVH::MakeTextureHandlesNonResident() const{
-	for (const Material& material : materials)
-		if (material.albedoTextureHandle) glMakeTextureHandleNonResidentARB(material.albedoTextureHandle - 1);
+	for (const Material& material : materials) {
+		if (!material.albedoTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.albedoTexture.GetTextureHandle());
+		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+	}
 }
 void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
 	for (const Node* node : sceneHierarchy)

@@ -22,8 +22,8 @@ bool Texture::IsNull() const {
 	return isNull;
 }
 
-uint64_t Texture::GetTextureHandle(){
-	return isNull ? 0 : glGetTextureHandleARB(textureID) + 1;
+uint64_t Texture::GetTextureHandle() const{
+	return isNull ? 0 : glGetTextureHandleARB(textureID);
 }
 
 void Texture::LoadTexture(const std::string& path) {
