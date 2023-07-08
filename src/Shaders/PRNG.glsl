@@ -23,5 +23,5 @@ float rand(inout uint state)
 {
   uint x = rand_pcg(state);
   state = x;
-  return float(x)*uintBitsToFloat(0x2f800004u);
+  return float(x) / float(0xffffffffu);
 }

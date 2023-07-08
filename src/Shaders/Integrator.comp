@@ -154,10 +154,10 @@ vec3 Sample(){
 
             if (mat.metallicRoughnessTexture > 0){
                 vec3 metallicRoughness = textureLod(sampler2D(mat.metallicRoughnessTexture - 1), hitInfo.uv, 0.0).rgb;
+
                 mat.metallic = metallicRoughness.b;
                 mat.roughness = metallicRoughness.g;
             }
-
             mat.roughness = mat.roughness * mat.roughness;
 
             if (mat.emission != vec3(0.0)){

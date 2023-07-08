@@ -6,21 +6,15 @@
 #include "Vertex.h"
 #include "Node.h"
 #include "Material.h"
+#include "Primitive.h"
 
 namespace Atrium {
 	class Mesh : public Node{
 	public:
 		Mesh(const tinygltf::Node& gltfNode, Transform parentTransform,
 			const tinygltf::Model& model);
-	private:
-		void LoadAttributes(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
-		void LoadIndices(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
-		void LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Model& model);
-		Texture GetTexture(const tinygltf::TextureInfo& textureInfo, const tinygltf::Model& model, bool isSRGB);
 	public:
-		std::vector<Vertex> vertices;
-		std::vector<unsigned int> indices;
-		Material material;
+		std::vector<Primitive> primitives;
 	};
 }
 

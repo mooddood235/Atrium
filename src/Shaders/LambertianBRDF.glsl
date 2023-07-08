@@ -11,7 +11,7 @@ float pdf_LambertianBRDF(vec3 wo, vec3 wi){
 }
 BXDFSample SampleLambertianBRDF(vec3 wo, vec3 albedo, float u0, float u1){
 	vec3 wi = CosineSampleHemisphere(u0, u1);
-	if (wo.z < 0) wi.z *= -1.0;
+	//if (wo.z < 0) wi.z *= -1.0;
 	float pdf = CosineSampleHemispherePDF(AbsCosTheta(wi));
 
 	return BXDFSample(albedo / PI, pdf, wi);

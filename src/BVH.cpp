@@ -271,33 +271,35 @@ void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
 			LoadMeshesHelper((const Mesh*)node);
 }
 void BVH::LoadMeshesHelper(const Mesh* mesh) {
-	unsigned int oldVerticesSize = vertices.size();
-	
-	glm::mat4 modelMatrix = mesh->GetTransform(Space::Global).GetMatrix();
-	glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
+	for (const Primitive& primitive : mesh->primitives) {
+		unsigned int oldVerticesSize = vertices.size();
 
-	vertices.reserve(vertices.size() + mesh->vertices.size());
+		glm::mat4 modelMatrix = mesh->GetTransform(Space::Global).GetMatrix();
+		glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 
-	for (Vertex vertex : mesh->vertices) {
-		vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
-		vertex.normal = glm::normalize(normalMatrix * vertex.normal);
-		vertices.push_back(vertex);
+		vertices.reserve(vertices.size() + primitive.vertices.size());
+
+		for (Vertex vertex : primitive.vertices) {
+			vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
+			vertex.normal = glm::normalize(normalMatrix * vertex.normal);
+			vertices.push_back(vertex);
+		}
+		bvhTriangles.reserve(bvhTriangles.size() + primitive.indices.size() / 3);
+		materials.push_back(primitive.material);
+		for (unsigned int i = 0; i < primitive.indices.size(); i += 3) {
+			Triangle triangle = Triangle(primitive.indices[i], primitive.indices[i + 1], primitive.indices[i + 2]) + oldVerticesSize;
+
+			glm::vec3 aabbMin = glm::min(vertices[triangle.index0].position,
+				glm::min(vertices[triangle.index1].position, vertices[triangle.index2].position));
+			glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
+				glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
+
+			bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax), materials.size() - 1));
+		}
+		for (const Node* node : mesh->children)
+			if (node->GetType() == NodeType::Mesh)
+				LoadMeshesHelper((const Mesh*)node);
 	}
-	bvhTriangles.reserve(bvhTriangles.size() + mesh->indices.size() / 3);
-	materials.push_back(mesh->material);
-	for (unsigned int i = 0; i < mesh->indices.size(); i += 3) {
-		Triangle triangle = Triangle(mesh->indices[i], mesh->indices[i + 1], mesh->indices[i + 2]) + oldVerticesSize;
-
-		glm::vec3 aabbMin = glm::min(vertices[triangle.index0].position,
-			glm::min(vertices[triangle.index1].position, vertices[triangle.index2].position));
-		glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
-			glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
-
-		bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax), materials.size() - 1));
-	}
-	for (const Node* node : mesh->children)
-		if (node->GetType() == NodeType::Mesh)
-			LoadMeshesHelper((const Mesh*)node);
 }
 
 unsigned int BVH::GetDepth() const {
