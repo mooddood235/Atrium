@@ -9,7 +9,8 @@
 			"name":"Scene",
 			"nodes":[
 				0,
-				1
+				1,
+				2
 			]
 		}
 	],
@@ -38,9 +39,24 @@
 				0.994975209236145
 			],
 			"translation":[
-				0.10698597133159637,
-				1.0702269077301025,
-				2.8400423526763916
+				0.10618752986192703,
+				1.0659990310668945,
+				2.8188469409942627
+			]
+		},
+		{
+			"mesh":1,
+			"name":"Plane",
+			"rotation":[
+				0,
+				-0.2869037389755249,
+				0,
+				0.9579594135284424
+			],
+			"scale":[
+				8.431756973266602,
+				8.431756973266602,
+				8.431756973266602
 			]
 		}
 	],
@@ -71,6 +87,19 @@
 					"index":2
 				}
 			}
+		},
+		{
+			"doubleSided":true,
+			"name":"Material",
+			"pbrMetallicRoughness":{
+				"baseColorFactor":[
+					0.06342858076095581,
+					0.06342858076095581,
+					0.06342858076095581,
+					1
+				],
+				"metallicFactor":0
+			}
 		}
 	],
 	"meshes":[
@@ -85,6 +114,20 @@
 					},
 					"indices":3,
 					"material":0
+				}
+			]
+		},
+		{
+			"name":"Plane.001",
+			"primitives":[
+				{
+					"attributes":{
+						"POSITION":4,
+						"TEXCOORD_0":5,
+						"NORMAL":6
+					},
+					"indices":7,
+					"material":1
 				}
 			]
 		}
@@ -154,6 +197,40 @@
 			"componentType":5123,
 			"count":52368,
 			"type":"SCALAR"
+		},
+		{
+			"bufferView":4,
+			"componentType":5126,
+			"count":130,
+			"max":[
+				1,
+				1.3917570114135742,
+				1
+			],
+			"min":[
+				-1,
+				0,
+				-1
+			],
+			"type":"VEC3"
+		},
+		{
+			"bufferView":5,
+			"componentType":5126,
+			"count":130,
+			"type":"VEC2"
+		},
+		{
+			"bufferView":6,
+			"componentType":5126,
+			"count":130,
+			"type":"VEC3"
+		},
+		{
+			"bufferView":7,
+			"componentType":5123,
+			"count":510,
+			"type":"SCALAR"
 		}
 	],
 	"bufferViews":[
@@ -180,6 +257,30 @@
 			"byteLength":104736,
 			"byteOffset":311872,
 			"target":34963
+		},
+		{
+			"buffer":0,
+			"byteLength":1560,
+			"byteOffset":416608,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":1040,
+			"byteOffset":418168,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":1560,
+			"byteOffset":419208,
+			"target":34962
+		},
+		{
+			"buffer":0,
+			"byteLength":1020,
+			"byteOffset":420768,
+			"target":34963
 		}
 	],
 	"samplers":[
@@ -190,7 +291,7 @@
 	],
 	"buffers":[
 		{
-			"byteLength":416608,
+			"byteLength":421788,
 			"uri":"Statue.bin"
 		}
 	]
