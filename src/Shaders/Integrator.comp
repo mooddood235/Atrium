@@ -31,8 +31,12 @@ struct Vertex{
     float pad0;
     vec3 n;
     float pad1;
+    vec3 t;
+    float pad2;
+    vec3 b;
+    float pad3;
     vec2 uv;
-    vec2 pad2;
+    vec2 pad4;
 };
 struct Triangle{
     uint i0, i1, i2;
@@ -259,8 +263,19 @@ HitInfo Hit_Triangle(Ray ray, Triangle triangle){
 
     float w = 1.0 - u - v;
 
-    vec3 n = normalize(w * v0.n + u * v1.n + v * v2.n);
     vec2 uv = w * v0.uv + u * v1.uv + v * v2.uv;
+
+    vec3 n = normalize(v0.n * w + v1.n * u + v2.n * v);
+
+	mat3 TBN = mat3(
+		normalize(v0.t * w + v1.t * u + v2.t * v),
+		normalize(v0.b * w + v1.b * u + v2.b * v),
+		n
+	);
+
+    Material mat = materials[triangle.matIndex];
+    if( mat.normalTexture > 0) 
+        n = normalize(TBN * textureLod(sampler2D(mat.normalTexture - 1), uv, 0.0).rgb);
 
     return HitInfo(true, t, At(ray, t), n, uv, triangle.matIndex);
 }

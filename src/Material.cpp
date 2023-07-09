@@ -12,10 +12,11 @@ Material::Material() {
 
 	albedoTexture = Texture();
 	metallicRoughnessTexture = Texture();
+	normalTexture = Texture();
 }
 
 Material::Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor
-	, float transmissionFactor, float ior, Texture albedoTexture, Texture metallicRoughnessTexture) {
+	, float transmissionFactor, float ior, Texture albedoTexture, Texture metallicRoughnessTexture, Texture normalTexture) {
 	this->albedoFactor = albedoFactor;
 	this->roughnessFactor = roughnessFactor;
 	this->metallicFactor = metallicFactor;
@@ -25,4 +26,5 @@ Material::Material(glm::vec3 albedoFactor, float roughnessFactor, float metallic
 	
 	this->albedoTexture = albedoTexture;
 	this->metallicRoughnessTexture = metallicRoughnessTexture;
+	this->normalTexture = normalTexture;
 }

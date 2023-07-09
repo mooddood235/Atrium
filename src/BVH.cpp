@@ -130,13 +130,19 @@ void BVH::GenerateSSBOs() {
 		float pad0;
 		glm::vec3 n;
 		float pad1;
+		glm::vec3 t;
+		float pad2;
+		glm::vec3 b;
+		float pad3;
 		glm::vec2 uv;
-		glm::vec2 pad2;
+		glm::vec2 pad4;
 
 		GPUVertex() {}
 		GPUVertex(const Vertex& vertex) {
 			p = vertex.position;
 			n = vertex.normal;
+			t = vertex.tangent;
+			b = vertex.bitangent;
 			uv = vertex.uv;
 		}
 	};
@@ -180,6 +186,8 @@ void BVH::GenerateSSBOs() {
 		float ior;
 		uint64_t albedoTexture;
 		uint64_t metallicRoughnessTexture;
+		uint64_t normalTexture;
+		uint64_t pad2;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
@@ -191,6 +199,7 @@ void BVH::GenerateSSBOs() {
 			ior = material.ior;
 			albedoTexture = material.albedoTexture.IsNull() ? 0 : material.albedoTexture.GetTextureHandle() + 1;
 			metallicRoughnessTexture = material.metallicRoughnessTexture.IsNull() ? 0 : material.metallicRoughnessTexture.GetTextureHandle() + 1;
+			normalTexture = material.normalTexture.IsNull() ? 0 : material.normalTexture.GetTextureHandle() + 1;
 		}
 	};
 	#pragma pack(pop)
@@ -257,12 +266,14 @@ void BVH::MakeTextureHandlesResident() const{
 	for (const Material& material : materials) {
 		if (!material.albedoTexture.IsNull()) glMakeTextureHandleResidentARB(material.albedoTexture.GetTextureHandle());
 		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+		if (!material.normalTexture.IsNull()) glMakeTextureHandleResidentARB(material.normalTexture.GetTextureHandle());
 	}
 }
 void BVH::MakeTextureHandlesNonResident() const{
 	for (const Material& material : materials) {
 		if (!material.albedoTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.albedoTexture.GetTextureHandle());
 		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+		if (!material.normalTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.normalTexture.GetTextureHandle());
 	}
 }
 void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
