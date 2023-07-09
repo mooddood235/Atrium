@@ -162,7 +162,6 @@ vec3 Sample(){
                 mat.metallic = metallicRoughness.b;
                 mat.roughness = metallicRoughness.g;
             }
-
             mat.roughness = mat.roughness * mat.roughness;
 
             if (mat.emission != vec3(0.0)){
@@ -274,8 +273,8 @@ HitInfo Hit_Triangle(Ray ray, Triangle triangle){
 	);
 
     Material mat = materials[triangle.matIndex];
-    if( mat.normalTexture > 0) 
-        n = normalize(TBN * textureLod(sampler2D(mat.normalTexture - 1), uv, 0.0).rgb);
+    if(mat.normalTexture > 0) 
+        n = normalize(TBN * (textureLod(sampler2D(mat.normalTexture - 1), uv, 0.0).rgb * 2.0 - 1.0));
 
     return HitInfo(true, t, At(ray, t), n, uv, triangle.matIndex);
 }
