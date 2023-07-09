@@ -273,7 +273,7 @@ HitInfo Hit_Triangle(Ray ray, Triangle triangle){
 	);
 
     Material mat = materials[triangle.matIndex];
-    if(mat.normalTexture > 0) 
+    if(mat.normalTexture > 0 && v0.t != vec3(0.0)) 
         n = normalize(TBN * (textureLod(sampler2D(mat.normalTexture - 1), uv, 0.0).rgb * 2.0 - 1.0));
 
     return HitInfo(true, t, At(ray, t), n, uv, triangle.matIndex);
