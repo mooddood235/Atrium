@@ -25,12 +25,12 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene scene = Atrium::Scene("Models/Statue/Statue.gltf");
+    Atrium::Scene scene = Atrium::Scene("Models/Cannon/Cannon.gltf");
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::EnvironmentMap environmentMap("EnvironmentMaps/brown_photostudio_02_4k.hdr");
+    Atrium::EnvironmentMap environmentMap("EnvironmentMaps/rainforest_trail_4k.hdr");
     
     // Display Objects
     Quad quad = Quad();

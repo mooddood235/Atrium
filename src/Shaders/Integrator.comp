@@ -158,6 +158,7 @@ vec3 Sample(){
                 mat.metallic = metallicRoughness.b;
                 mat.roughness = metallicRoughness.g;
             }
+
             mat.roughness = mat.roughness * mat.roughness;
 
             if (mat.emission != vec3(0.0)){
@@ -172,10 +173,12 @@ vec3 Sample(){
             BXDFSample bxdfSample = SampleUberBSDF(
                 wo, mat, rand(prngState), rand(prngState), rand(prngState), rand(prngState));
 
+
             if (bxdfSample == InvalidSample){
                 irradiance = vec3(0.0);
                 break;
             }
+
             irradiance *= bxdfSample.f / max(EPSILON, bxdfSample.pdf) * AbsCosTheta(bxdfSample.wi);
 
             float flip = CosTheta(bxdfSample.wi) > 0.0 ? 1.0 : -1.0;
