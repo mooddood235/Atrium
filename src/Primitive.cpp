@@ -96,6 +96,11 @@ void Primitive::LoadIndices(const tinygltf::Primitive& primitive, const tinygltf
 	}
 }
 void Primitive::LoadMaterial(const tinygltf::Primitive& primitive, const tinygltf::Model& model) {
+	if (primitive.material < 0) {
+		material = Material();
+		return;
+	}
+
 	const tinygltf::Material gltfMaterial = model.materials[primitive.material];
 	const tinygltf::PbrMetallicRoughness pbr = gltfMaterial.pbrMetallicRoughness;
 
