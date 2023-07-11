@@ -3,10 +3,11 @@
 #include <vector>
 #include <TinyGLTF/tiny_gltf.h>
 
-#include "Vertex.h"
+#include "../Data/Vertex.h"
 #include "Node.h"
-#include "Material.h"
-#include "Primitive.h"
+#include "../Data/Material.h"
+#include "../Data/Primitive.h"
+#include "../Data/Transform.h"
 
 namespace Atrium {
 	class Mesh : public Node{

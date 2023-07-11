@@ -147,22 +147,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Primitive.cpp" />
-    <ClCompile Include="src\EnvironmentMap.cpp" />
-    <ClCompile Include="src\BVHSplitBucket.cpp" />
-    <ClCompile Include="src\FlatBVHNode.cpp" />
-    <ClCompile Include="src\BVHTriangle.cpp" />
-    <ClCompile Include="src\AABB.cpp" />
-    <ClCompile Include="src\BVHNode.cpp" />
-    <ClCompile Include="src\BVH.cpp" />
-    <ClCompile Include="src\Material.cpp" />
+    <ClCompile Include="src\Data\Primitive.cpp" />
+    <ClCompile Include="src\Texture\EnvironmentMap.cpp" />
+    <ClCompile Include="src\BVH\BVHSplitBucket.cpp" />
+    <ClCompile Include="src\BVH\FlatBVHNode.cpp" />
+    <ClCompile Include="src\BVH\BVHTriangle.cpp" />
+    <ClCompile Include="src\Data\AABB.cpp" />
+    <ClCompile Include="src\BVH\BVHNode.cpp" />
+    <ClCompile Include="src\BVH\BVH.cpp" />
+    <ClCompile Include="src\Data\Material.cpp" />
     <ClCompile Include="src_display\Quad.cpp" />
-    <ClCompile Include="src\Film.cpp" />
+    <ClCompile Include="src\Texture\Film.cpp" />
     <ClCompile Include="src\RenderCamera.cpp" />
-    <ClCompile Include="src\Camera.cpp" />
-    <ClCompile Include="src\Mesh.cpp" />
-    <ClCompile Include="src\Node.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Scene\Camera.cpp" />
+    <ClCompile Include="src\Scene\Mesh.cpp" />
+    <ClCompile Include="src\Scene\Node.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\Atrium.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -170,38 +170,38 @@
     <ClCompile Include="src\stb_image_write.cpp" />
     <ClCompile Include="src\stb_include.cpp" />
     <ClCompile Include="src\tiny_gltf.cpp" />
-    <ClCompile Include="src\Vertex.cpp" />
-    <ClCompile Include="src\Triangle.cpp" />
-    <ClCompile Include="src\Texture.cpp" />
-    <ClCompile Include="src\Transform.cpp" />
+    <ClCompile Include="src\Data\Vertex.cpp" />
+    <ClCompile Include="src\Data\Triangle.cpp" />
+    <ClCompile Include="src\Texture\Texture.cpp" />
+    <ClCompile Include="src\Data\Transform.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Primitive.h" />
-    <ClInclude Include="src\EnvironmentMap.h" />
-    <ClInclude Include="src\BVHSplitBucket.h" />
-    <ClInclude Include="src\FlatBVHNode.h" />
-    <ClInclude Include="src\BVHTriangle.h" />
-    <ClInclude Include="src\AABB.h" />
-    <ClInclude Include="src\BVHNode.h" />
-    <ClInclude Include="src\BVH.h" />
-    <ClInclude Include="src\Material.h" />
+    <ClInclude Include="src\Data\Primitive.h" />
+    <ClInclude Include="src\Texture\EnvironmentMap.h" />
+    <ClInclude Include="src\BVH\BVHSplitBucket.h" />
+    <ClInclude Include="src\BVH\FlatBVHNode.h" />
+    <ClInclude Include="src\BVH\BVHTriangle.h" />
+    <ClInclude Include="src\Data\AABB.h" />
+    <ClInclude Include="src\BVH\BVHNode.h" />
+    <ClInclude Include="src\BVH\BVH.h" />
+    <ClInclude Include="src\Data\Material.h" />
     <ClInclude Include="src_display\Quad.h" />
-    <ClInclude Include="src\Film.h" />
+    <ClInclude Include="src\Texture\Film.h" />
     <ClInclude Include="src\RenderCamera.h" />
-    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="Includes\stb\stb_include.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="src\Mesh.h" />
-    <ClInclude Include="src\Node.h" />
-    <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Scene\Mesh.h" />
+    <ClInclude Include="src\Scene\Node.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\ShaderProgram.h" />
     <ClInclude Include="src\Atrium.h" />
-    <ClInclude Include="src\Vertex.h" />
-    <ClInclude Include="src\Triangle.h" />
-    <ClInclude Include="src\Texture.h" />
-    <ClInclude Include="src\Transform.h" />
+    <ClInclude Include="src\Data\Vertex.h" />
+    <ClInclude Include="src\Data\Triangle.h" />
+    <ClInclude Include="src\Texture\Texture.h" />
+    <ClInclude Include="src\Data\Transform.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\Shaders\BXDFHelpers.glsl" />

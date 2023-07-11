@@ -1,5 +1,5 @@
 #pragma once
-#include "ShaderProgram.h"
+#include "../ShaderProgram.h"
 #include <glm/glm.hpp>
 
 namespace Atrium {

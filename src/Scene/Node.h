@@ -4,7 +4,7 @@
 #include <vector>
 #include <TinyGLTF/tiny_gltf.h>
 #include <glm/glm.hpp>
-#include "Transform.h"
+#include "../Data/Transform.h"
 
 namespace Atrium {
 	enum class NodeType {

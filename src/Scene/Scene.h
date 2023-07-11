@@ -5,8 +5,8 @@
 
 #include "Node.h"
 #include "Camera.h"
-#include "Transform.h"
-#include "BVH.h"
+#include "../Data/Transform.h"
+#include "../BVH/BVH.h"
 
 namespace Atrium {
 	class Scene{

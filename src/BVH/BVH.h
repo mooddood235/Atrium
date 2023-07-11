@@ -2,12 +2,12 @@
 
 #include <span>
 
-#include "Vertex.h"
+#include "../Data/Vertex.h"
 #include "BVHNode.h"
 #include "FlatBVHNode.h"
 #include "BVHTriangle.h"
-#include "Mesh.h"
-#include "Material.h"
+#include "../Scene/Mesh.h"
+#include "../Data/Material.h"
 
 namespace Atrium {
 	enum class SplitMethod {

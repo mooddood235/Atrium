@@ -1,6 +1,6 @@
 #pragma once
-#include "Triangle.h"
-#include "AABB.h"
+#include "../Data/Triangle.h"
+#include "../Data/AABB.h"
 
 namespace Atrium {
 	struct BVHTriangle{

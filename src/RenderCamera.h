@@ -1,11 +1,11 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Camera.h"
-#include "Film.h"
+#include "Scene/Camera.h"
+#include "Texture/Film.h"
 #include "ShaderProgram.h"
-#include "EnvironmentMap.h"
-#include "Scene.h"
+#include "Texture/EnvironmentMap.h"
+#include "Scene/Scene.h"
 
 namespace Atrium {
 	enum class RenderMode {

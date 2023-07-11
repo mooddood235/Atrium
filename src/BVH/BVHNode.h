@@ -1,6 +1,6 @@
 #pragma once
 
-#include "AABB.h"
+#include "../Data/AABB.h"
 
 namespace Atrium {
 	struct BVHNode {

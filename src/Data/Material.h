@@ -1,7 +1,7 @@
 #pragma once
 
 #include <glm/glm.hpp>
-#include "Texture.h"
+#include "../Texture/Texture.h"
 
 namespace Atrium {
 	struct Material {
