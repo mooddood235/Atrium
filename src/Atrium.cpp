@@ -6,11 +6,11 @@
 #include "../src_display/Quad.h"
 
 #include "Atrium.h"
-#include "Scene.h"
+#include "Scene/Scene.h"
 #include "RenderCamera.h"
 #include "ShaderProgram.h"
-#include "Film.h"
-#include "EnvironmentMap.h"
+#include "Texture/Film.h"
+#include "Texture/EnvironmentMap.h"
 
 int main()
 {
