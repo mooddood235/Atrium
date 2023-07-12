@@ -150,6 +150,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
             atriumData.depth = stoi(next);
         }
     }
+    return atriumData;
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
