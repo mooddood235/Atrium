@@ -1,12 +1,28 @@
 #pragma once
 #include <GLFW/glfw3.h>
+#include <string>
 
 #define WINDOWWIDTH 1920
 #define WINDOWHEIGHT 1080
 
+struct AtriumData {
+public:
+    AtriumData() {
+        scenePath = "";
+        envTexturePath = "";
+        samples = 500;
+        depth = 10;
+    }
+public:
+    std::string scenePath;
+    std::string envTexturePath;
+    unsigned int samples;
+    unsigned int depth;
+};
 
 GLFWwindow* InitGLFW();
 void InitGLAD();
+AtriumData ProcessCommandLine(int argc, char* argv[]);
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
     unsigned int id,

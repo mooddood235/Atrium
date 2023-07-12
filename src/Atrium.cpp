@@ -12,8 +12,10 @@
 #include "Texture/Film.h"
 #include "Texture/EnvironmentMap.h"
 
-int main()
+int main(int argc, char* argv[])
 {
+    AtriumData atriumData = ProcessCommandLine(argc, argv);
+
     // Inits
     GLFWwindow* window = InitGLFW();
     InitGLAD();
@@ -25,7 +27,7 @@ int main()
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene scene = Atrium::Scene("Models/Cannon/Cannon.gltf");
+    Atrium::Scene scene = Atrium::Scene("Models/Camera/Camera.gltf");
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
@@ -101,6 +103,52 @@ void InitGLAD() {
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "ERROR: Failed to initialize GLAD" << std::endl;
         exit(-1);
+    }
+}
+AtriumData ProcessCommandLine(int argc, char* argv[]){
+    AtriumData atriumData = AtriumData();
+
+    const char* flags[] = { "-p", "-e", "-s", "d" };
+
+    auto IsFlag = [flags](char* command) -> bool {
+        for (unsigned int i = 0; i < 4; i++) 
+            if (strcmp(command, flags[i]) == 0) return true;
+        return false;
+    };
+    auto IsNum = [](char* command) -> bool {
+        for (unsigned int i = 0; i < strlen(command); i++)
+            if (!isdigit(command[i])) return false;
+        return true;
+    };
+
+    for (unsigned int i = 1; i < argc; i++) {
+        char* command = argv[i];
+        if (!IsFlag(command)) {
+            std::cout << "ERROR: Expecting flag, got " << command << std::endl;
+            exit(-1);
+        }
+        char* next = i + 1 >= argc ? nullptr : argv[i + 1];
+        if (!next) {
+            std::cout << "ERROR: Nothing following flag" << command << std::endl;
+            exit(-1);
+        }
+
+        if (strcmp(command, "-p") == 0) atriumData.scenePath = next;
+        else if (strcmp(command, "-e") == 0) atriumData.envTexturePath = next;
+        else if (strcmp(command, "-s") == 0) {
+            if (!IsNum(next)) {
+                std::cout << "ERROR: expected number, got " << next << std::endl;
+                exit(-1);
+            }
+            atriumData.samples = stoi(next);
+        }
+        else if (strcmp(command, "-d") == 0) {
+            if (!IsNum(next)) {
+                std::cout << "ERROR: expected number, got " << next << std::endl;
+                exit(-1);
+            }
+            atriumData.depth = stoi(next);
+        }
     }
 }
 void APIENTRY GlDebugOutput(GLenum source,
