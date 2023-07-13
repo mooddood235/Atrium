@@ -30,6 +30,11 @@ int main(int argc, char* argv[])
     Atrium::Scene scene = Atrium::Scene(atriumData.scenePath);
     std::cout << scene.ToString() << std::endl;
 
+    if (scene.cameras.empty()) {
+        std::cout << "LOAD GLTF ERROR: You must load a scene with a camera in it." << std::endl;
+        exit(-1);
+    }
+
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
     Atrium::EnvironmentMap environmentMap(atriumData.envTexturePath);
