@@ -27,12 +27,12 @@ int main(int argc, char* argv[])
     Atrium::RenderCamera::Init();
     
     // Objects
-    Atrium::Scene scene = Atrium::Scene("Models/Camera/Camera.gltf");
+    Atrium::Scene scene = Atrium::Scene(atriumData.scenePath);
     std::cout << scene.ToString() << std::endl;
 
     Atrium::Camera* camera = scene.cameras[0];
     Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
-    Atrium::EnvironmentMap environmentMap("EnvironmentMaps/brown_photostudio_02_4k.hdr");
+    Atrium::EnvironmentMap environmentMap(atriumData.envTexturePath);
     
     // Display Objects
     Quad quad = Quad();
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
     float lastTime = 0.0f;
     unsigned int samplesTaken = 0;
     const unsigned int samplesPerTick = 1;
-    const unsigned int depth = 10;
+    const unsigned int depth = atriumData.depth;
 
     // Bind scene
     Atrium::RenderCamera::BindScene(scene);
@@ -106,51 +106,20 @@ void InitGLAD() {
     }
 }
 AtriumData ProcessCommandLine(int argc, char* argv[]){
-    AtriumData atriumData = AtriumData();
-
-    const char* flags[] = { "-p", "-e", "-s", "d" };
-
-    auto IsFlag = [flags](char* command) -> bool {
-        for (unsigned int i = 0; i < 4; i++) 
-            if (strcmp(command, flags[i]) == 0) return true;
-        return false;
-    };
-    auto IsNum = [](char* command) -> bool {
-        for (unsigned int i = 0; i < strlen(command); i++)
-            if (!isdigit(command[i])) return false;
+    auto IsNum = [](char* s) -> bool {
+        for (unsigned int i = 0; i < strlen(s); i++)
+            if (!isdigit(s[i])) return false;
         return true;
     };
-
-    for (unsigned int i = 1; i < argc; i++) {
-        char* command = argv[i];
-        if (!IsFlag(command)) {
-            std::cout << "ERROR: Expecting flag, got " << command << std::endl;
-            exit(-1);
-        }
-        char* next = i + 1 >= argc ? nullptr : argv[i + 1];
-        if (!next) {
-            std::cout << "ERROR: Nothing following flag" << command << std::endl;
-            exit(-1);
-        }
-
-        if (strcmp(command, "-p") == 0) atriumData.scenePath = next;
-        else if (strcmp(command, "-e") == 0) atriumData.envTexturePath = next;
-        else if (strcmp(command, "-s") == 0) {
-            if (!IsNum(next)) {
-                std::cout << "ERROR: expected number, got " << next << std::endl;
-                exit(-1);
-            }
-            atriumData.samples = stoi(next);
-        }
-        else if (strcmp(command, "-d") == 0) {
-            if (!IsNum(next)) {
-                std::cout << "ERROR: expected number, got " << next << std::endl;
-                exit(-1);
-            }
-            atriumData.depth = stoi(next);
-        }
+    if (argc < 4) {
+        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
+        exit(-1);
     }
-    return atriumData;
+    if (!IsNum(argv[2]) || !IsNum(argv[3])) {
+        std::cout << "ERROR: [Samples] and [MaxDepth] must be unsigned ints." << std::endl;
+        exit(-1);
+    }
+    return AtriumData(argv[0], argv[1], stoi(argv[2]), stoi(argv[3]));
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,

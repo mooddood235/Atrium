@@ -7,15 +7,15 @@
 
 struct AtriumData {
 public:
-    AtriumData() {
-        scenePath = "";
-        envTexturePath = "";
-        samples = 500;
-        depth = 10;
+    AtriumData(char* scenePath, char* envTexturePath, unsigned int samples, unsigned int depth) {
+        this->scenePath = scenePath;
+        this->envTexturePath = envTexturePath;
+        this->samples = samples;
+        this->depth = depth;
     }
 public:
-    std::string scenePath;
-    std::string envTexturePath;
+    char* scenePath;
+    char* envTexturePath;
     unsigned int samples;
     unsigned int depth;
 };
