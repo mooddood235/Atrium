@@ -40,6 +40,7 @@ int main(int argc, char* argv[])
 
     // Objects
     float lastTime = 0.0f;
+    const unsigned int maxSamples = atriumData.samples;
     unsigned int samplesTaken = 0;
     const unsigned int samplesPerTick = 1;
     const unsigned int depth = atriumData.depth;
@@ -56,15 +57,14 @@ int main(int argc, char* argv[])
         lastTime = currentTime;
         
         Atrium::RenderMode renderMode = Atrium::RenderMode::Append;
-        if (camera->TransformFromInput(window, deltaTime)) {
+        if (atriumData.interactive && camera->TransformFromInput(window, deltaTime)) {
             samplesTaken = 0;
             renderMode = Atrium::RenderMode::Write;
+        }        
+        if (samplesTaken < maxSamples) {
+            Atrium::RenderCamera::Render(film, *camera, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
+            samplesTaken += samplesPerTick;
         }
-        
-        Atrium::RenderCamera::Render(film, *camera, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
-
-        samplesTaken += samplesPerTick;
-
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, film.GetTextureID());
         displayShader.SetUint("samplesTaken", samplesTaken);
@@ -112,14 +112,19 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         return true;
     };
     if (argc < 5) {
-        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
+        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] [Optional: Interactive -> -i]" << std::endl;
         exit(-1);
     }
     if (!IsNum(argv[3]) || !IsNum(argv[4])) {
         std::cout << "ERROR: [Samples] and [MaxDepth] must be unsigned ints." << std::endl;
         exit(-1);
     }
-    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]));
+    bool interactive = false;
+
+    for (unsigned int i = 5; i < argc; i++)
+        if (strcmp(argv[i], "-i") == 0) interactive = true;
+
+    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), interactive);
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
