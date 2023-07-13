@@ -111,15 +111,15 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
             if (!isdigit(s[i])) return false;
         return true;
     };
-    if (argc < 4) {
+    if (argc < 5) {
         std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
         exit(-1);
     }
-    if (!IsNum(argv[2]) || !IsNum(argv[3])) {
+    if (!IsNum(argv[3]) || !IsNum(argv[4])) {
         std::cout << "ERROR: [Samples] and [MaxDepth] must be unsigned ints." << std::endl;
         exit(-1);
     }
-    return AtriumData(argv[0], argv[1], stoi(argv[2]), stoi(argv[3]));
+    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]));
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
