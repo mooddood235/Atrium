@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     AtriumData atriumData = ProcessCommandLine(argc, argv);
 
     // Inits
-    GLFWwindow* window = InitGLFW();
+    GLFWwindow* window = InitGLFW(atriumData);
     InitGLAD();
 
     glDebugMessageCallback(GlDebugOutput, nullptr);
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     }
 
     Atrium::Camera* camera = scene.cameras[0];
-    Atrium::Film film(WINDOWWIDTH, WINDOWHEIGHT);
+    Atrium::Film film(atriumData.width, atriumData.height);
     Atrium::EnvironmentMap environmentMap(atriumData.envTexturePath);
     
     // Display Objects
@@ -84,20 +84,20 @@ int main(int argc, char* argv[])
     }
     Atrium::RenderCamera::UnBindScene(scene);
     
-    if (!atriumData.interactive && atriumData.outPath) SaveImage(atriumData.outPath);
+    if (!atriumData.interactive && atriumData.outPath) SaveImage(atriumData.outPath, atriumData);
     
     glfwTerminate();
     return 0;
 }
 
-GLFWwindow* InitGLFW() {
+GLFWwindow* InitGLFW(const AtriumData& atriumData) {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
 
-    GLFWwindow* window = glfwCreateWindow(WINDOWWIDTH, WINDOWHEIGHT, "Atrium", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(atriumData.width, atriumData.height, "Atrium", NULL, NULL);
 
     if (!window) {
         std::cout << "ERROR: Failed to create GLFW window" << std::endl;
@@ -122,17 +122,17 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
     };
     for (unsigned int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
-            std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] | Optional Flags" << std::endl;
+            std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [MaxDepth] [Samples] [Width] [Height] | Optional Flags" << std::endl;
             std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by image out path (only png supported). Only works if -i is not set." << std::endl;
             exit(1);
         }
     }
-    if (argc < 5) {
-        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] | Optional Flags" << std::endl;
+    if (argc < 7) {
+        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [MaxDepth] [Samples] [Width] [Height] | Optional Flags" << std::endl;
         exit(-1);
     }
-    if (!IsNum(argv[3]) || !IsNum(argv[4])) {
-        std::cout << "ERROR: [Samples] and [MaxDepth] must be unsigned ints." << std::endl;
+    if (!(IsNum(argv[3]) && IsNum(argv[4]) && IsNum(argv[5]) && IsNum(argv[6]))) {
+        std::cout << "ERROR: [Samples], [MaxDepth], [Width], and [Height] must be unsigned ints." << std::endl;
         exit(-1);
     }
     bool interactive = false;
@@ -148,14 +148,14 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
             outPath = argv[i + 1];
         }
     }
-    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), interactive, outPath);
+    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), stoi(argv[5]), stoi(argv[6]), interactive, outPath);
 }
-void SaveImage(const char* outPath) {
-    unsigned char* pixels = new unsigned char[WINDOWWIDTH * WINDOWHEIGHT * 3];
-    glReadPixels(0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+void SaveImage(const char* outPath, const AtriumData& atriumData) {
+    unsigned char* pixels = new unsigned char[atriumData.width * atriumData.height * 3];
+    glReadPixels(0, 0, atriumData.width, atriumData.height, GL_RGB, GL_UNSIGNED_BYTE, pixels);
 
     stbi_flip_vertically_on_write(true);
-    stbi_write_png(outPath, WINDOWWIDTH, WINDOWHEIGHT, 3, pixels, 3 * WINDOWWIDTH);
+    stbi_write_png(outPath, atriumData.width, atriumData.height, 3, pixels, 3 * atriumData.width);
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
