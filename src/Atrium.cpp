@@ -123,7 +123,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
     for (unsigned int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
             std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] | Optional Flags" << std::endl;
-            std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by path png out. Only works if -i is not set." << std::endl;
+            std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by image out path (only png supported). Only works if -i is not set." << std::endl;
             exit(1);
         }
     }
