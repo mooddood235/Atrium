@@ -2,6 +2,7 @@
 #include <glad/glad.h>
 #include <string>
 #include <algorithm>
+#include <stb/stb_image_write.h>
 
 #include "../src_display/Quad.h"
 
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
     Atrium::RenderCamera::BindScene(scene);
 
     // Render loop
-    while (!glfwWindowShouldClose(window)) {
+    while (!glfwWindowShouldClose(window) && (atriumData.interactive || samplesTaken < maxSamples)) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         float currentTime = glfwGetTime();
@@ -82,7 +83,10 @@ int main(int argc, char* argv[])
         glfwPollEvents();
     }
     Atrium::RenderCamera::UnBindScene(scene);
+
+    if (!atriumData.interactive && atriumData.outPath) SaveImage(atriumData.outPath);
     glfwTerminate();
+
     return 0;
 }
 
@@ -145,6 +149,13 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         }
     }
     return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), interactive, outPath);
+}
+void SaveImage(const char* outPath) {
+    unsigned char* pixels = new unsigned char[WINDOWWIDTH * WINDOWHEIGHT * 3];
+    glReadPixels(0, 0, WINDOWWIDTH, WINDOWHEIGHT, GL_RGB, GL_UNSIGNED_BYTE, pixels);
+
+    stbi_flip_vertically_on_write(true);
+    stbi_write_png(outPath, WINDOWWIDTH, WINDOWHEIGHT, 3, pixels, 3 * WINDOWWIDTH);
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,

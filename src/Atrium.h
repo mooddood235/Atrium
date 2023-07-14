@@ -34,6 +34,7 @@ public:
 GLFWwindow* InitGLFW();
 void InitGLAD();
 AtriumData ProcessCommandLine(int argc, char* argv[]);
+void SaveImage(const char* outPath);
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
     unsigned int id,
