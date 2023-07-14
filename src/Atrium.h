@@ -7,12 +7,20 @@
 
 struct AtriumData {
 public:
-    AtriumData(char* scenePath, char* envTexturePath, unsigned int samples, unsigned int depth, bool interactive) {
+    AtriumData(
+        char* scenePath,
+        char* envTexturePath,
+        unsigned int samples,
+        unsigned int depth,
+        bool interactive,
+        char* outPath
+    ) {
         this->scenePath = scenePath;
         this->envTexturePath = envTexturePath;
         this->samples = samples;
         this->depth = depth;
         this->interactive = interactive;
+        this->outPath = outPath;
     }
 public:
     char* scenePath;
@@ -20,6 +28,7 @@ public:
     unsigned int samples;
     unsigned int depth;
     bool interactive;
+    char* outPath;
 };
 
 GLFWwindow* InitGLFW();

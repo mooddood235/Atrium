@@ -117,7 +117,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         return true;
     };
     if (argc < 5) {
-        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] [Optional: Interactive -> -i]" << std::endl;
+        std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
         exit(-1);
     }
     if (!IsNum(argv[3]) || !IsNum(argv[4])) {
@@ -125,11 +125,19 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         exit(-1);
     }
     bool interactive = false;
+    char* outPath = nullptr;
 
-    for (unsigned int i = 5; i < argc; i++)
-        if (strcmp(argv[i], "-i") == 0) interactive = true;
-
-    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), interactive);
+    for (unsigned int i = 5; i < argc; i++) {
+        if (strcmp(argv[i], "-i") == 0 && (strcmp(argv[i - 1], "-o") != 0)) interactive = true;
+        if (strcmp(argv[i], "-o") == 0) {
+            if (i + 1 >= argc) {
+                std::cout << "ERROR: Expected out path following -o." << std::endl;
+                exit(-1);
+            }
+            outPath = argv[i + 1];
+        }
+    }
+    return AtriumData(argv[1], argv[2], stoi(argv[3]), stoi(argv[4]), interactive, outPath);
 }
 void APIENTRY GlDebugOutput(GLenum source,
     GLenum type,
