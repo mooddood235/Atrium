@@ -132,7 +132,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         exit(-1);
     }
     if (!(IsNum(argv[3]) && IsNum(argv[4]) && IsNum(argv[5]) && IsNum(argv[6]))) {
-        std::cout << "ERROR: [Samples], [MaxDepth], [Width], and [Height] must be unsigned ints." << std::endl;
+        std::cout << "ERROR: [MaxDepth], [Samples], [Width], and [Height] must be unsigned ints." << std::endl;
         exit(-1);
     }
     bool interactive = false;
