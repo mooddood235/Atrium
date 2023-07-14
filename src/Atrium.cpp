@@ -116,6 +116,14 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
             if (!isdigit(s[i])) return false;
         return true;
     };
+    for (unsigned int i = 1; i < argc; i++) {
+        if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
+            std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
+            std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by path for image out" << std::endl;
+            exit(1);
+        }
+    }
+
     if (argc < 5) {
         std::cout << "ERROR: ./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth]" << std::endl;
         exit(-1);
