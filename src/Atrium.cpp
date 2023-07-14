@@ -83,10 +83,10 @@ int main(int argc, char* argv[])
         glfwPollEvents();
     }
     Atrium::RenderCamera::UnBindScene(scene);
-
+    
     if (!atriumData.interactive && atriumData.outPath) SaveImage(atriumData.outPath);
+    
     glfwTerminate();
-
     return 0;
 }
 
@@ -123,7 +123,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
     for (unsigned int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
             std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [Samples] [MaxDepth] | Optional Flags" << std::endl;
-            std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by path for image out. Only works if -i is not set." << std::endl;
+            std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by path png out. Only works if -i is not set." << std::endl;
             exit(1);
         }
     }
@@ -166,7 +166,7 @@ void APIENTRY GlDebugOutput(GLenum source,
     const void* userParam)
 {
     // ignore non-significant error/warning codes
-    if (id == 131169 || id == 131185 || id == 131218 || id == 131204) return;
+    if (id == 131169 || id == 131185 || id == 131218 || id == 131204 || id == 131154) return;
 
     std::cout << "---------------" << std::endl;
     std::cout << "Debug message (" << id << "): " << message << std::endl;
