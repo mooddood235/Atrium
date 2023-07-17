@@ -23,5 +23,6 @@ Atrium is a GPU accelerated path tracer writting in GLSL.
 # Gallery
 ![Cannon](https://github.com/mooddood235/Atrium/assets/62807754/beb7890d-c105-47b4-bbcb-379d67a44754)
 ![Dragon](https://github.com/mooddood235/Atrium/assets/62807754/27bb77d2-aa7d-4556-aed3-3b83dfd99470)
-![Camera](https://github.com/mooddood235/Atrium/assets/62807754/5b06191f-0034-4d03-82a2-0a59b853273b)
+![Chess](https://github.com/mooddood235/Atrium/assets/62807754/9220260e-4bda-4e71-9172-a84ff2507838)
+
 
