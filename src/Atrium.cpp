@@ -127,6 +127,7 @@ AtriumData ProcessCommandLine(int argc, char* argv[]){
         if (strcmp(argv[i], "help") == 0 || strcmp(argv[i], "-help") == 0 || strcmp(argv[i], "-h") == 0) {
             std::cout << "\n./Atrium [ScenePath] [EnvMapPath] [MaxDepth] [Samples] [Width] [Height] | Optional Flags" << std::endl;
             std::cout << "Optional flags:\n  -i for interactive mode \n  -o followed by image out path (only png supported). Only works if -i is not set." << std::endl;
+            std::cout << "Press 's' to show progress in non-interactive mode." << std::endl;
             exit(1);
         }
     }
