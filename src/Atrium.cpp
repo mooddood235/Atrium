@@ -66,7 +66,10 @@ int main(int argc, char* argv[])
         if (atriumData.interactive && camera->TransformFromInput(window, deltaTime)) {
             samplesTaken = 0;
             renderMode = Atrium::RenderMode::Write;
-        }        
+        }
+        if (!atriumData.interactive && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+            std::cout << samplesTaken << "/" << maxSamples << std::endl;
+        }
         if (samplesTaken < maxSamples) {
             Atrium::RenderCamera::Render(film, *camera, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
             samplesTaken += samplesPerTick;
@@ -105,7 +108,7 @@ GLFWwindow* InitGLFW(const AtriumData& atriumData) {
         exit(-1);
     }
     glfwMakeContextCurrent(window);
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    if (atriumData.interactive) glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     return window;
 }
 void InitGLAD() {
