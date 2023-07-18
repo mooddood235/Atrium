@@ -1,5 +1,5 @@
 # Atrium
-Atrium is a GPU accelerated path tracer writting in GLSL.
+Atrium is a GPU accelerated path tracer written in GLSL.
 
 ![Camera](https://github.com/mooddood235/Atrium/assets/62807754/17e96540-e867-493f-92f1-31be59419331)
 
