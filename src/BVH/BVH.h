@@ -24,7 +24,7 @@ namespace Atrium {
 		unsigned int GetDepth() const;
 	private:
 		void LoadMeshes(const std::vector<Node*> sceneHierarchy);
-		void LoadMeshesHelper(const Mesh* mesh);
+		void LoadMeshesHelper(const Node* node);
 		BVHNode* BuildRecursive(std::span<BVHTriangle> triangles);
 		BVHNode* CreateLeaf(std::span<BVHTriangle> triangles, const AABB& aabb, unsigned int dim);
 		int Flatten(const BVHNode* bvhNode, int* offset);

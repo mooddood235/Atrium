@@ -277,40 +277,38 @@ void BVH::MakeTextureHandlesNonResident() const{
 	}
 }
 void BVH::LoadMeshes(const std::vector<Node*> sceneHierarchy) {
-	for (const Node* node : sceneHierarchy)
-		if (node->GetType() == NodeType::Mesh)
-			LoadMeshesHelper((const Mesh*)node);
+	for (const Node* node : sceneHierarchy) LoadMeshesHelper(node);
 }
-void BVH::LoadMeshesHelper(const Mesh* mesh) {
-	for (const Primitive& primitive : mesh->primitives) {
-		unsigned int oldVerticesSize = vertices.size();
+void BVH::LoadMeshesHelper(const Node* node) {
+	if (node->GetType() == NodeType::Mesh) {
+		for (const Primitive& primitive : ((const Mesh*)node)->primitives) {
+			unsigned int oldVerticesSize = vertices.size();
 
-		glm::mat4 modelMatrix = mesh->GetTransform(Space::Global).GetMatrix();
-		glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
+			glm::mat4 modelMatrix = node->GetTransform(Space::Global).GetMatrix();
+			glm::mat3 normalMatrix = glm::transpose(glm::inverse(modelMatrix));
 
-		vertices.reserve(vertices.size() + primitive.vertices.size());
+			vertices.reserve(vertices.size() + primitive.vertices.size());
 
-		for (Vertex vertex : primitive.vertices) {
-			vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
-			vertex.normal = glm::normalize(normalMatrix * vertex.normal);
-			vertices.push_back(vertex);
+			for (Vertex vertex : primitive.vertices) {
+				vertex.position = modelMatrix * glm::vec4(vertex.position, 1.0f);
+				vertex.normal = glm::normalize(normalMatrix * vertex.normal);
+				vertices.push_back(vertex);
+			}
+			bvhTriangles.reserve(bvhTriangles.size() + primitive.indices.size() / 3);
+			materials.push_back(primitive.material);
+			for (unsigned int i = 0; i < primitive.indices.size(); i += 3) {
+				Triangle triangle = Triangle(primitive.indices[i], primitive.indices[i + 1], primitive.indices[i + 2]) + oldVerticesSize;
+
+				glm::vec3 aabbMin = glm::min(vertices[triangle.index0].position,
+					glm::min(vertices[triangle.index1].position, vertices[triangle.index2].position));
+				glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
+					glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
+
+				bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax), materials.size() - 1));
+			}
 		}
-		bvhTriangles.reserve(bvhTriangles.size() + primitive.indices.size() / 3);
-		materials.push_back(primitive.material);
-		for (unsigned int i = 0; i < primitive.indices.size(); i += 3) {
-			Triangle triangle = Triangle(primitive.indices[i], primitive.indices[i + 1], primitive.indices[i + 2]) + oldVerticesSize;
-
-			glm::vec3 aabbMin = glm::min(vertices[triangle.index0].position,
-				glm::min(vertices[triangle.index1].position, vertices[triangle.index2].position));
-			glm::vec3 aabbMax = glm::max(vertices[triangle.index0].position,
-				glm::max(vertices[triangle.index1].position, vertices[triangle.index2].position));
-
-			bvhTriangles.push_back(BVHTriangle(triangle, AABB(aabbMin, aabbMax), materials.size() - 1));
-		}
-		for (const Node* node : mesh->children)
-			if (node->GetType() == NodeType::Mesh)
-				LoadMeshesHelper((const Mesh*)node);
 	}
+	for (const Node* node : node->children)	LoadMeshesHelper(node);
 }
 
 unsigned int BVH::GetDepth() const {
