@@ -70,6 +70,9 @@ int main(int argc, char* argv[])
         if (!atriumData.interactive && glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
             std::cout << samplesTaken << "/" << maxSamples << std::endl;
         }
+        if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+            glfwSetWindowShouldClose(window, true);
+        }
         if (samplesTaken < maxSamples) {
             Atrium::RenderCamera::Render(film, *camera, environmentMap, samplesPerTick, depth, samplesTaken, renderMode);
             samplesTaken += samplesPerTick;
@@ -99,6 +102,7 @@ GLFWwindow* InitGLFW(const AtriumData& atriumData) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_DOUBLEBUFFER, GLFW_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
     GLFWwindow* window = glfwCreateWindow(atriumData.width, atriumData.height, "Atrium", NULL, NULL);
 
