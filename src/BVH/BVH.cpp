@@ -186,8 +186,8 @@ void BVH::GenerateSSBOs() {
 		float ior;
 		uint64_t albedoTexture;
 		uint64_t metallicRoughnessTexture;
+		uint64_t emissionTexture;
 		uint64_t normalTexture;
-		uint64_t pad2;
 
 		GPUMaterial() {}
 		GPUMaterial(const Material& material) {
@@ -199,6 +199,7 @@ void BVH::GenerateSSBOs() {
 			ior = material.ior;
 			albedoTexture = material.albedoTexture.IsNull() ? 0 : material.albedoTexture.GetTextureHandle() + 1;
 			metallicRoughnessTexture = material.metallicRoughnessTexture.IsNull() ? 0 : material.metallicRoughnessTexture.GetTextureHandle() + 1;
+			emissionTexture = material.emissionTexture.IsNull() ? 0 : material.emissionTexture.GetTextureHandle() + 1;
 			normalTexture = material.normalTexture.IsNull() ? 0 : material.normalTexture.GetTextureHandle() + 1;
 		}
 	};
@@ -266,6 +267,7 @@ void BVH::MakeTextureHandlesResident() const{
 	for (const Material& material : materials) {
 		if (!material.albedoTexture.IsNull()) glMakeTextureHandleResidentARB(material.albedoTexture.GetTextureHandle());
 		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+		if (!material.emissionTexture.IsNull()) glMakeTextureHandleResidentARB(material.emissionTexture.GetTextureHandle());
 		if (!material.normalTexture.IsNull()) glMakeTextureHandleResidentARB(material.normalTexture.GetTextureHandle());
 	}
 }
@@ -273,6 +275,7 @@ void BVH::MakeTextureHandlesNonResident() const{
 	for (const Material& material : materials) {
 		if (!material.albedoTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.albedoTexture.GetTextureHandle());
 		if (!material.metallicRoughnessTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.metallicRoughnessTexture.GetTextureHandle());
+		if (!material.emissionTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.emissionTexture.GetTextureHandle());
 		if (!material.normalTexture.IsNull()) glMakeTextureHandleNonResidentARB(material.normalTexture.GetTextureHandle());
 	}
 }

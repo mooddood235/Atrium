@@ -155,20 +155,20 @@ vec3 Sample(){
             Material mat = materials[hitInfo.matIndex];
             if (mat.albedoTexture > 0)
                 mat.albedo = textureLod(sampler2D(mat.albedoTexture - 1), hitInfo.uv, 0.0).rgb;
-
+            if (mat.emissionTexture > 0)
+                mat.emission = textureLod(sampler2D(mat.emissionTexture - 1), hitInfo.uv, 0.0).rgb;
             if (mat.metallicRoughnessTexture > 0){
                 vec3 metallicRoughness = textureLod(sampler2D(mat.metallicRoughnessTexture - 1), hitInfo.uv, 0.0).rgb;
-
                 mat.metallic = metallicRoughness.b;
                 mat.roughness = metallicRoughness.g;
             }
             mat.roughness = mat.roughness * mat.roughness;
-
             if (mat.emission != vec3(0.0)){
                 irradiance *= mat.emission;
                 break;
             }
-            mat3 invTangentSpace = inverse(GetTangentSpace(hitInfo.n));
+            mat3 tangentSpace = GetTangentSpace(hitInfo.n);
+            mat3 invTangentSpace = inverse(tangentSpace);
 
             vec3 n = vec3(0.0, 0.0, 1.0);
             vec3 wo = normalize(invTangentSpace * -ray.d);
@@ -185,7 +185,7 @@ vec3 Sample(){
             irradiance *= bxdfSample.f / max(EPSILON, bxdfSample.pdf) * AbsCosTheta(bxdfSample.wi);
 
             float flip = CosTheta(bxdfSample.wi) > 0.0 ? 1.0 : -1.0;
-            vec3 wi = normalize(inverse(invTangentSpace) * bxdfSample.wi);
+            vec3 wi = normalize(tangentSpace * bxdfSample.wi);
             ray = Ray(hitInfo.p + hitInfo.n * 0.0001 * flip, wi);
         }
         else{

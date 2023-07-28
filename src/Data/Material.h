@@ -8,7 +8,11 @@ namespace Atrium {
 	public:
 		Material();
 		Material(glm::vec3 albedoFactor, float roughnessFactor, float metallicFactor, glm::vec3 emissiveFactor
-		, float transmissionFactor, float ior, Texture albedoTexture, Texture metallicRoughnessTexture, Texture normalTexture);
+		, float transmissionFactor, float ior,
+			Texture albedoTexture,
+			Texture metallicRoughnessTexture,
+			Texture emissionTexture,
+			Texture normalTexture);
 	public:
 		glm::vec3 albedoFactor;
 		float roughnessFactor;
@@ -19,6 +23,7 @@ namespace Atrium {
 
 		Texture albedoTexture;
 		Texture metallicRoughnessTexture;
+		Texture emissionTexture;
 		Texture normalTexture;
 	};
 }

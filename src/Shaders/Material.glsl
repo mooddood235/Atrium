@@ -10,6 +10,6 @@ struct Material{
     float ior;
     uint64_t albedoTexture;
     uint64_t metallicRoughnessTexture;
+    uint64_t emissionTexture;
     uint64_t normalTexture;
-	uint64_t pad2;
 };

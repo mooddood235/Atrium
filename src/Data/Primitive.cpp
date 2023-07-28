@@ -113,6 +113,7 @@ void Primitive::LoadMaterial(const tinygltf::Primitive& primitive, const tinyglt
 		1.45f,
 		GetTexture(pbr.baseColorTexture, model, true),
 		GetTexture(pbr.metallicRoughnessTexture, model, false),
+		GetTexture(gltfMaterial.emissiveTexture, model, true),
 		GetNormalTexture(gltfMaterial.normalTexture, model)
 	);
 	auto extension = gltfMaterial.extensions.find("KHR_materials_emissive_strength");
