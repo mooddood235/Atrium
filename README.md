@@ -12,7 +12,7 @@ Atrium is a GPU accelerated path tracer written in GLSL.
 - Cumalitive rendering
 - PBR metallic-roughness workflow
 - Texture support
-  - Albedo, metallic-roughness, normal
+  - Albedo, metallic-roughness, emission, normal
 - GLTF 2.0 support
   - KHR_materials_ior
   - KHR_materials_emissive_strength
