@@ -7,8 +7,8 @@ Atrium is a GPU accelerated path tracer written in GLSL.
 - Unidirectional path tracer
 - SAH BVH
 - Dielectric BSDF, Conductor BRDF, Lambertian BRDF, Uber BSDF
-- Image based lighting
 - BSDF importance sampling
+- Image based lighting
 - Cumalitive rendering
 - PBR metallic-roughness workflow
 - Texture support
@@ -19,6 +19,9 @@ Atrium is a GPU accelerated path tracer written in GLSL.
   - KHR_materials_transmission
   - Meshes
   - Cameras
+- Interactive mode
+- Image output
+- Terminal interface
 
 # Gallery
 ![Cannon](https://github.com/mooddood235/Atrium/assets/62807754/beb7890d-c105-47b4-bbcb-379d67a44754)
