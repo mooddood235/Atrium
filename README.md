@@ -20,8 +20,18 @@ Atrium is a GPU accelerated path tracer written in GLSL.
   - Meshes
   - Cameras
 - Interactive mode
-- Image output
+- PNG image output
 - Terminal interface
+
+# Interface 
+`./Atrium [ScenePath] [EnvMapPath] [MaxDepth] [Samples] [Width] [Height] | Optional Flags`
+
+Optional flags:
+
+ -  `-i` for interactive mode
+ -  `-o` followed by image out path (only png supported). No image output in interactive mode.
+  
+Press 's' to show progress in non-interactive mode.
 
 # Gallery
 ![Cannon](https://github.com/mooddood235/Atrium/assets/62807754/beb7890d-c105-47b4-bbcb-379d67a44754)
