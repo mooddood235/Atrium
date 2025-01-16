@@ -34,7 +34,7 @@ Optional flags:
 Press 's' to show progress in non-interactive mode.
 
 # Gallery
-![Cannon](https://github.com/mooddood235/Atrium/assets/62807754/beb7890d-c105-47b4-bbcb-379d67a44754)
+![out](https://github.com/user-attachments/assets/49ccff42-0034-4dbc-b467-8fce3cce2239)
 ![Dragon](https://github.com/mooddood235/Atrium/assets/62807754/27bb77d2-aa7d-4556-aed3-3b83dfd99470)
 ![Clendintine](https://github.com/mooddood235/Atrium/assets/62807754/f69eba2e-00cb-4ed3-a765-fbb59e1f73c7)
 ![Chess](https://github.com/mooddood235/Atrium/assets/62807754/9220260e-4bda-4e71-9172-a84ff2507838)
